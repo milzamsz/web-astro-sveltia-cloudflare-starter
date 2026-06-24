@@ -21,11 +21,10 @@
   ],
 
   "vars": {
-    "SVELTIA_BACKEND_REPO": "<owner>/<repo>",
+    "SVELTIA_BACKEND_REPO": "milzamsz/web-astro-sveltia-cloudflare-starter",
     "SVELTIA_BACKEND_BRANCH": "main",
-    "SVELTIA_BASE_URL": "https://auth.example.com",
-    "RESEND_API_KEY": "<RESEND_API_KEY>",
-    "SESSION_SECRET": "<SESSION_SECRET>",
-    "TOTP_ISSUER": "Astro Sveltia Cloudflare"
+    "SVELTIA_BASE_URL": "https://web-astro-sveltia-cloudflare-starter.pages.dev",
+    "TOTP_ISSUER": "Astro Sveltia Cloudflare",
+    "PNPM_VERSION": "8.15.0"
   }
 }
