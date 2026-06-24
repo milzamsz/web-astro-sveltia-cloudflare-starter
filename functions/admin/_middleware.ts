@@ -36,6 +36,7 @@ export async function onRequest(context: {
   // Bypass auth for login page, auth API, and public assets
   const bypassPaths = [
     '/login',
+    '/admin/totp-enroll',
     '/api/auth/sign-in',
     '/api/auth/sign-up',
     '/api/auth/verify-email',
