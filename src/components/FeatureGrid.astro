@@ -1,0 +1,105 @@
+---
+export interface Feature {
+  title: string;
+  description: string;
+  icon?: string;
+}
+
+export interface Props {
+  title?: string;
+  features: Feature[];
+  columns?: 2 | 3 | 4;
+}
+
+const { title, features, columns = 3 } = Astro.props;
+const gridClass = `feature-grid__grid feature-grid__grid--${columns}`;
+---
+
+<section class="feature-grid container">
+  {title && <h2 class="feature-grid__title">{title}</h2>}
+  <div class={gridClass}>
+    {features.map((feature) => (
+      <article class="feature-card">
+        {feature.icon && <span class="feature-card__icon">{feature.icon}</span>}
+        <h3 class="feature-card__title">{feature.title}</h3>
+        <p class="feature-card__desc">{feature.description}</p>
+      </article>
+    ))}
+  </div>
+</section>
+
+<style>
+  .feature-grid {
+    padding-block: var(--space-2xl);
+  }
+
+  .feature-grid__title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    text-align: center;
+    margin: 0 0 var(--space-2xl);
+  }
+
+  .feature-grid__grid {
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  .feature-grid__grid--2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .feature-grid__grid--3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .feature-grid__grid--4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  @media (width <= 768px) {
+    .feature-grid__grid--2,
+    .feature-grid__grid--3,
+    .feature-grid__grid--4 {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (width > 768px) and (width <= 1024px) {
+    .feature-grid__grid--3,
+    .feature-grid__grid--4 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .feature-card {
+    padding: var(--space-lg);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .feature-card:hover {
+    border-color: var(--color-border-hover);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .feature-card__icon {
+    display: block;
+    font-size: 1.5rem;
+    margin-bottom: var(--space-sm);
+  }
+
+  .feature-card__title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin: 0 0 var(--space-sm);
+  }
+
+  .feature-card__desc {
+    font-size: 0.9375rem;
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: 1.6;
+  }
+</style>

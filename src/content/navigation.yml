@@ -1,0 +1,59 @@
+# Navigation Configuration
+# Managed through Sveltia CMS → Settings → Navigation
+header:
+  - label: "Beranda"
+    url: "/"
+    locale: id
+  - label: "Home"
+    url: "/en/"
+    locale: en
+  - label: "Tentang"
+    url: "/tentang"
+    locale: id
+  - label: "About"
+    url: "/en/about"
+    locale: en
+  - label: "Layanan"
+    url: "/layanan"
+    locale: id
+  - label: "Services"
+    url: "/en/services"
+    locale: en
+  - label: "Harga"
+    url: "/harga"
+    locale: id
+  - label: "Pricing"
+    url: "/en/pricing"
+    locale: en
+  - label: "Blog"
+    url: "/blog"
+    locale: id
+  - label: "Blog"
+    url: "/en/blog"
+    locale: en
+  - label: "Kontak"
+    url: "/kontak"
+    locale: id
+  - label: "Contact"
+    url: "/en/contact"
+    locale: en
+  - label: "Dokumentasi"
+    url: "/docs"
+    locale: id
+  - label: "Documentation"
+    url: "/en/docs"
+    locale: en
+
+footer:
+  - label: "Kebijakan Privasi"
+    url: "/kebijakan-privasi"
+    locale: id
+  - label: "Privacy Policy"
+    url: "/en/privacy"
+    locale: en
+  - label: "Syarat & Ketentuan"
+    url: "/syarat-ketentuan"
+    locale: id
+  - label: "Terms & Conditions"
+    url: "/en/terms"
+    locale: en

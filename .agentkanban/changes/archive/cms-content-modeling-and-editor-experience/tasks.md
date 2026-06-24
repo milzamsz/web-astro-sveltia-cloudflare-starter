@@ -1,0 +1,34 @@
+# Tasks
+
+- [x] **Add Sveltia admin entry point** — create `/public/admin/index.html` pinning a specific Sveltia CMS version via CDN, plus `/public/admin/config.yml` with backend repo, branch, media_folder, and locale config.
+  - `/public/admin/index.html` — Sveltia CMS 2.0.16 loaded from CDN, noindex meta, brand CSS variables
+  - `/public/admin/config.yml` — backend configuration, 7 collections (pages-id, pages-en, services-id, services-en, blog-id, blog-en, docs) + settings collection with 2 singleton files (site, navigation)
+- [x] **Model localized collections** — define Sveltia collections for:
+  - Pages (about, contact, pricing, privacy, terms — per locale)
+  - Services (with slug, features, priceRange — per locale)
+  - Blog (title, description, locale, publishDate, draft, tags, author)
+  - Docs (Starlight docs — via `/docs` route, not CMS-editable body content; CMS provides metadata only)
+  - Legal (isLegal flag, shared by privacy/terms)
+  - Singleton: Site settings (analytics provider, map coordinates, org info, social links)
+  - Singleton: Header/footer navigation items
+- [x] **Add editorial metadata** — include per-collection fields for:
+  - `translationKey` (links content across locales)
+  - `publishState` (draft / published / archived — client-side filter; runtime publish control deferred to task 009)
+  - `updatedAt` timestamp
+  - `mediaReferences` (image paths for hero, OG images, service icons)
+- [x] **Write CMS config validation** — create `scripts/validate-cms-config.cjs` that parses config.yml and asserts every collection maps to a known content collection + schema field. Run via `pnpm validate:cms`.
+  - Validates file existence (config.yml, settings.yml, navigation.yml, content folders)
+  - Validates collection names match expected list
+  - Checks for secrets in config.yml
+  - Validates content schema fields exist (locale, slug, translationKey, draft)
+  - Result: 0 errors, 1 expected warning (empty docs folder — deferred to Starlight setup)
+- [ ] **Apply CMS custom styling** — optional `/public/admin/index.html` CSS overrides for brand alignment (defer to later design pass).
+- [x] **Write editor documentation** — create `docs/editor-guide.md` covering:
+  - How to log in (GitHub OAuth)
+  - Collection-by-collection editing guide
+  - Locale switching and translationKey convention
+  - Media upload workflow (link to task 007)
+  - Draft/publish state expectations
+- [x] **Update TECHNICAL.md** — add operator section documenting CMS env vars (`SVELTIA_BACKEND_REPO`, `SVELTIA_BACKEND_BRANCH`), media configuration, and CMS config change procedure.
+  - TECHNICAL.md updated with CMS Content Modeling section covering technical scope, commands, affected areas
+- [ ] **Verify end-to-end** — open `/admin` locally, confirm collections render, confirm config validation passes, confirm no secrets in committed admin files.

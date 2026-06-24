@@ -1,0 +1,77 @@
+---
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { SITE_CONFIG, type Locale } from "../lib/site-config";
+import { canonicalUrl, hreflangLinks, jsonLdWebSite, ogMeta } from "../lib/seo";
+import "../styles/globals.css";
+
+export interface Props {
+  title: string;
+  description?: string;
+  locale?: Locale;
+  path?: string;
+}
+
+// For i18n routing, prefer path from Astro.currentRoute
+const { currentLocale } = Astro.props as { currentLocale: Locale };
+
+const {
+  title,
+  description = SITE_CONFIG.description,
+  locale = currentLocale || SITE_CONFIG.defaultLocale,
+  path = "/",
+} = Astro.props;
+
+const canonical = canonicalUrl(locale, path);
+const links = hreflangLinks(path);
+const jsonLd = jsonLdWebSite({ title, description, locale, path });
+const og = ogMeta({ title, description, locale, path });
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <!-- Canonical -->
+    <link rel="canonical" href={canonical} />
+
+    <!-- Hreflang -->
+    {links.map((link) => (
+      <link rel={link.rel} href={link.href} hreflang={link.hreflang} />
+    ))}
+
+    <!-- Open Graph / Twitter -->
+    {Object.entries(og).map(([property, content]) => (
+      <meta property={property} content={content} />
+    ))}
+
+    <!-- JSON-LD -->
+    <script type="application/ld+json set:html">
+      {JSON.stringify(jsonLd)}
+    </script>
+
+    <!-- Security headers stub — enforced at edge / server level -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+
+    <slot name="head" />
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">
+      {locale === "id" ? "Langsung ke konten" : "Skip to content"}
+    </a>
+
+    <Header currentLocale={locale} currentPath={path} />
+
+    <main id="main-content">
+      <slot />
+    </main>
+
+    <Footer currentLocale={locale} />
+  </body>
+</html>

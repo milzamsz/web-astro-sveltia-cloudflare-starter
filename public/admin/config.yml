@@ -1,0 +1,393 @@
+# Sveltia CMS Configuration
+# https://github.com/sveltia/sveltia-cms
+#
+# Backend repo and branch are configured via environment variables
+# injected at build time or during Sveltia OAuth flow.
+# - SVELTIA_BACKEND_REPO: owner/repo
+# - SVELTIA_BACKEND_BRANCH: main (production) or content-preview (drafts)
+# - SVELTIA_BASE_URL: auth callback URL
+
+backend:
+  name: github
+  repo: <owner>/<repo>          # Replace with actual repo or inject via env
+  branch: main                  # Production branch; editors change to content-preview for drafts
+  base_url: https://auth.example.com
+  auth_endpoint: auth           # Sveltia OAuth endpoint
+  site_domain: example.com
+
+# Media: R2-backed uploads via environment-specific bucket bindings.
+# - R2_BUCKET_NAME: set via Cloudflare Pages secrets (astro-sveltia-media)
+# - R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY: R2 S3-compatible credentials
+# - R2_ENDPOINT: R2 S3 endpoint per environment
+# - SVELTIA_MEDIA_BASE_URL: custom asset domain (e.g. https://assets.example.com)
+media_folder: ""                                              # No Git-backed media
+public_folder: ""
+media_library:
+  name: default
+  config:
+    max_file_size: 10485760                                   # 10 MB
+    folder: uploads/{year}/{month}/{slug}
+    public_path: "{{SVELTIA_MEDIA_URL}}/{{media_url}}"
+    r2:
+      bucket: "{{R2_BUCKET_NAME}}"
+      access_key_id: "{{R2_ACCESS_KEY_ID}}"
+      secret_access_key: "{{R2_SECRET_ACCESS_KEY}}"
+      endpoint: "{{R2_ENDPOINT}}"
+      region: auto
+
+# Locale-aware slug configuration — matches the _en.md suffix convention for
+# English variants and plain .md for Indonesian (default locale).
+slug:
+  encoding: unicode
+  clean_accents: true
+
+collections:
+  # ─── Pages ───────────────────────────────────────────────
+  # Indonesian pages: <slug>.md  (e.g. about.md)
+  - name: pages-id
+    label: Pages (Indonesia)
+    label_singular: Page
+    description: Halaman publik dalam bahasa Indonesia
+    folder: src/content/pages
+    identifier_field: title
+    create: true
+    delete: true
+    extension: md
+    slug: "{{slug}}"
+    summary: "{{title}} — {{description|truncate(80)}}"
+    filter:
+      field: locale
+      value: id
+    fields:
+      - label: Locale
+        name: locale
+        widget: hidden
+        default: id
+      - label: Slug
+        name: slug
+        widget: string
+        hint: URL path segment (e.g., "about", "contact"). Leave as the page name.
+      - label: Title
+        name: title
+        widget: string
+      - label: Description
+        name: description
+        widget: text
+        hint: Short summary for meta description and listings.
+      - label: Sections
+        name: sections
+        widget: list
+        required: false
+        summary: "{{fields.type}} — {{fields.title or 'no title'}}"
+        field:
+          label: Section
+          name: section
+          widget: object
+          fields:
+            - { label: Type, name: type, widget: select, options: [hero, cta, features, faq, trust], default: hero }
+            - { label: Title, name: title, widget: string, required: false }
+            - { label: Content, name: content, widget: text, required: false }
+            - label: Items
+              name: items
+              widget: list
+              required: false
+              field:
+                label: Item
+                name: item
+                widget: object
+                fields:
+                  - { label: Title, name: title, widget: string, required: false }
+                  - { label: Description, name: description, widget: text, required: false }
+                  - { label: Icon, name: icon, widget: string, required: false, hint: "Icon name or path" }
+      - label: Legal Page
+        name: isLegal
+        widget: boolean
+        default: false
+        required: false
+        hint: Mark this as a legal/privacy/terms page.
+      - label: Order
+        name: order
+        widget: number
+        value_type: int
+        default: 0
+        hint: Display order in navigation (lower = first).
+      - label: Translation Key
+        name: translationKey
+        widget: string
+        required: false
+        hint: Link this page to its English counterpart (same key).
+      - label: Publish State
+        name: publishState
+        widget: select
+        options: [draft, published, archived]
+        default: published
+        required: false
+        hint: "Note: Full publish control is enforced at build time in task 009."
+      - label: Body
+        name: body
+        widget: markdown
+        required: false
+
+  # English pages: <slug>_en.md  (e.g. about_en.md)
+  - name: pages-en
+    label: Pages (English)
+    label_singular: Page
+    description: Public pages in English
+    folder: src/content/pages
+    identifier_field: title
+    create: true
+    delete: true
+    extension: md
+    slug: "{{slug}}_en"
+    summary: "{{title}} — {{description|truncate(80)}}"
+    filter:
+      field: locale
+      value: en
+    fields:
+      - label: Locale
+        name: locale
+        widget: hidden
+        default: en
+      - label: Slug
+        name: slug
+        widget: string
+        hint: URL path segment (e.g., "about", "contact"). Do NOT include _en suffix.
+      - label: Title
+        name: title
+        widget: string
+      - label: Description
+        name: description
+        widget: text
+      - label: Sections
+        name: sections
+        widget: list
+        required: false
+        summary: "{{fields.type}} — {{fields.title or 'no title'}}"
+        field:
+          label: Section
+          name: section
+          widget: object
+          fields:
+            - { label: Type, name: type, widget: select, options: [hero, cta, features, faq, trust], default: hero }
+            - { label: Title, name: title, widget: string, required: false }
+            - { label: Content, name: content, widget: text, required: false }
+            - label: Items
+              name: items
+              widget: list
+              required: false
+              field:
+                label: Item
+                name: item
+                widget: object
+                fields:
+                  - { label: Title, name: title, widget: string, required: false }
+                  - { label: Description, name: description, widget: text, required: false }
+                  - { label: Icon, name: icon, widget: string, required: false }
+      - label: Legal Page
+        name: isLegal
+        widget: boolean
+        default: false
+        required: false
+      - label: Order
+        name: order
+        widget: number
+        value_type: int
+        default: 0
+      - label: Translation Key
+        name: translationKey
+        widget: string
+        required: false
+        hint: Link this page to its Indonesian counterpart (same key).
+      - label: Publish State
+        name: publishState
+        widget: select
+        options: [draft, published, archived]
+        default: published
+        required: false
+      - label: Body
+        name: body
+        widget: markdown
+        required: false
+
+  # ─── Services ────────────────────────────────────────────
+  # Indonesian services: <slug>.md
+  - name: services-id
+    label: Services (Indonesia)
+    label_singular: Service
+    description: Layanan dalam bahasa Indonesia
+    folder: src/content/services
+    identifier_field: title
+    create: true
+    delete: true
+    extension: md
+    slug: "{{slug}}"
+    summary: "{{title}} — {{priceRange}}"
+    filter:
+      field: locale
+      value: id
+    fields:
+      - { label: Locale, name: locale, widget: hidden, default: id }
+      - { label: Slug, name: slug, widget: string }
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - { label: Features, name: features, widget: list, field: { label: Feature, name: feature, widget: string }, required: false }
+      - { label: Price Range, name: priceRange, widget: string, required: false }
+      - { label: Order, name: order, widget: number, value_type: int, default: 0 }
+      - { label: Translation Key, name: translationKey, widget: string, required: false }
+      - { label: Publish State, name: publishState, widget: select, options: [draft, published, archived], default: published, required: false }
+      - { label: Body, name: body, widget: markdown, required: false }
+
+  # English services: <slug>_en.md
+  - name: services-en
+    label: Services (English)
+    label_singular: Service
+    description: Services in English
+    folder: src/content/services
+    identifier_field: title
+    create: true
+    delete: true
+    extension: md
+    slug: "{{slug}}_en"
+    summary: "{{title}} — {{priceRange}}"
+    filter:
+      field: locale
+      value: en
+    fields:
+      - { label: Locale, name: locale, widget: hidden, default: en }
+      - { label: Slug, name: slug, widget: string }
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - { label: Features, name: features, widget: list, field: { label: Feature, name: feature, widget: string }, required: false }
+      - { label: Price Range, name: priceRange, widget: string, required: false }
+      - { label: Order, name: order, widget: number, value_type: int, default: 0 }
+      - { label: Translation Key, name: translationKey, widget: string, required: false }
+      - { label: Publish State, name: publishState, widget: select, options: [draft, published, archived], default: published, required: false }
+      - { label: Body, name: body, widget: markdown, required: false }
+
+  # ─── Blog ────────────────────────────────────────────────
+  # Blog posts use free-form filenames (not locale-suffixed).
+  # Locale is selected from the frontmatter field.
+  - name: blog-id
+    label: Blog (Indonesia)
+    label_singular: Post
+    description: Artikel blog dalam bahasa Indonesia
+    folder: src/content/blog
+    identifier_field: title
+    create: true
+    delete: true
+    extension: md
+    slug: "{{slug}}"
+    preview_path: blog/{{slug}}
+    filter:
+      field: locale
+      value: id
+    fields:
+      - { label: Locale, name: locale, widget: hidden, default: id }
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - { label: Publish Date, name: publishDate, widget: datetime, format: YYYY-MM-DD }
+      - { label: Draft, name: draft, widget: boolean, default: false, hint: "If checked, this post will not appear in production builds." }
+      - { label: Tags, name: tags, widget: list, field: { label: Tag, name: tag, widget: string }, required: false }
+      - { label: Author, name: author, widget: string, default: Admin, required: false }
+      - { label: Translation Key, name: translationKey, widget: string, required: false }
+      - { label: Publish State, name: publishState, widget: select, options: [draft, published, archived], default: published, required: false }
+      - { label: Body, name: body, widget: markdown, required: false }
+
+  - name: blog-en
+    label: Blog (English)
+    label_singular: Post
+    description: Blog posts in English
+    folder: src/content/blog
+    identifier_field: title
+    create: true
+    delete: true
+    extension: md
+    slug: "{{slug}}"
+    preview_path: en/blog/{{slug}}
+    filter:
+      field: locale
+      value: en
+    fields:
+      - { label: Locale, name: locale, widget: hidden, default: en }
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - { label: Publish Date, name: publishDate, widget: datetime, format: YYYY-MM-DD }
+      - { label: Draft, name: draft, widget: boolean, default: false }
+      - { label: Tags, name: tags, widget: list, field: { label: Tag, name: tag, widget: string }, required: false }
+      - { label: Author, name: author, widget: string, default: Admin, required: false }
+      - { label: Translation Key, name: translationKey, widget: string, required: false }
+      - { label: Publish State, name: publishState, widget: select, options: [draft, published, archived], default: published, required: false }
+      - { label: Body, name: body, widget: markdown, required: false }
+
+  # ─── Documentation (Starlight) ────────────────────────────
+  # Starlight docs have a separate schema and loader.
+  # CMS exposes metadata fields only (title, description, sidebar).
+  # Body content is managed by Starlight — editing body here may produce
+  # frontmatter-only files that won't render as Starlight expects.
+  - name: docs
+    label: Documentation
+    label_singular: Doc
+    description: Dokumentasi teknis (metadata only — body managed by Starlight)
+    folder: src/content/docs
+    identifier_field: title
+    create: true
+    delete: true
+    extension: md
+    slug: "{{slug}}"
+    summary: "{{title}}"
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text, required: false }
+      - { label: Template, name: template, widget: select, options: [doc, splash], default: doc, required: false }
+      - label: Sidebar
+        name: sidebar
+        widget: object
+        required: false
+        fields:
+          - { label: Label, name: label, widget: string, required: false }
+          - { label: Order, name: order, widget: number, value_type: int, required: false }
+      - { label: Body, name: body, widget: markdown, required: false, hint: "Body content is managed by Starlight. Edits here may not render correctly if Starlight syntax is used." }
+
+  # ─── Singleton Settings ───────────────────────────────────
+  - name: settings
+    label: Settings
+    description: Global site configuration (analytics, map, organization)
+    files:
+      - name: site
+        label: Site Settings
+        file: src/content/settings.yml
+        fields:
+          - { label: Site Name, name: name, widget: string }
+          - { label: Description, name: description, widget: text }
+          - { label: Site URL, name: url, widget: string, hint: "Base URL (no trailing slash), e.g. https://example.com" }
+          - { label: Default Locale, name: defaultLocale, widget: select, options: [id, en], default: id }
+          - { label: Analytics Provider, name: analyticsProvider, widget: select, options: [none, gtm, umami], default: none, hint: "Choose analytics provider. Configured here, rendered by the analytics adapter (task 010)." }
+          - { label: GTM ID, name: gtmId, widget: string, required: false, hint: "Google Tag Manager container ID (e.g. GTM-XXXXXXX). Required if analyticsProvider is gtm." }
+          - { label: Umami URL, name: umamiUrl, widget: string, required: false, hint: "Umami instance URL. Required if analyticsProvider is umami." }
+          - { label: Umami ID, name: umamiId, widget: string, required: false, hint: "Umami website ID. Required if analyticsProvider is umami." }
+          - { label: Map Latitude, name: mapLatitude, widget: string, required: false, hint: "Default map center latitude (e.g. -6.2088)" }
+          - { label: Map Longitude, name: mapLongitude, widget: string, required: false, hint: "Default map center longitude (e.g. 106.8456)" }
+          - { label: Organization Name, name: orgName, widget: string, required: false }
+          - { label: Organization Email, name: orgEmail, widget: string, required: false, hint: "Public contact email" }
+          - { label: Social Links, name: socialLinks, widget: list, required: false, field: { label: URL, name: url, widget: string } }
+
+      - name: navigation
+        label: Navigation
+        file: src/content/navigation.yml
+        fields:
+          - label: Header Items
+            name: header
+            widget: list
+            required: false
+            fields:
+              - { label: Label, name: label, widget: string }
+              - { label: URL, name: url, widget: string }
+              - { label: Locale, name: locale, widget: select, options: [id, en, both], default: both, hint: "Show this item for id locale, en locale, or both." }
+          - label: Footer Items
+            name: footer
+            widget: list
+            required: false
+            fields:
+              - { label: Label, name: label, widget: string }
+              - { label: URL, name: url, widget: string }
+              - { label: Locale, name: locale, widget: select, options: [id, en, both], default: both }

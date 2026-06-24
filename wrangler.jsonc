@@ -1,0 +1,31 @@
+{
+  "$schema": "https://schema.cloudflare.com/wrangler/2024-10-01",
+  "name": "astro-sveltia-cloudflare",
+  "compatibility_date": "2026-06-24",
+  "compatibility_flags": ["nodejs_compat"],
+  "pages_build_output_dir": "./dist",
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "astro-sveltia-db",
+      "database_id": "<D1_DATABASE_ID>"
+    }
+  ],
+
+  "r2_buckets": [
+    {
+      "binding": "R2_MEDIA",
+      "bucket_name": "astro-sveltia-media"
+    }
+  ],
+
+  "vars": {
+    "SVELTIA_BACKEND_REPO": "<owner>/<repo>",
+    "SVELTIA_BACKEND_BRANCH": "main",
+    "SVELTIA_BASE_URL": "https://auth.example.com",
+    "RESEND_API_KEY": "<RESEND_API_KEY>",
+    "SESSION_SECRET": "<SESSION_SECRET>",
+    "TOTP_ISSUER": "Astro Sveltia Cloudflare"
+  }
+}

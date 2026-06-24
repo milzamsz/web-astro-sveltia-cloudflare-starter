@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Content Manager — Astro Sveltia Cloudflare</title>
+  <style>
+    /* Minimal brand overlay — defer full styling to design pass (task 006 tasks.md item 5) */
+    :root {
+      --brand: oklch(0.45 0.1 260);
+      --brand-accent: oklch(0.55 0.15 260);
+      --nc-bg: #fafafa;
+      --nc-surface: #ffffff;
+      --nc-border: #e5e7eb;
+      --nc-text: #111827;
+      --nc-text-muted: #6b7280;
+      --nc-primary: var(--brand);
+      --nc-primary-hover: var(--brand-accent);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --nc-bg: #0f172a;
+        --nc-surface: #1e293b;
+        --nc-border: #334155;
+        --nc-text: #f8fafc;
+        --nc-text-muted: #94a3b8;
+      }
+    }
+  </style>
+</head>
+<body>
+    <!-- Sveltia CMS is loaded as an ES module from a pinned CDN version -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@sveltia/cms@0.167.3/dist/sveltia-cms.mjs"></script>
+</body>
+</html>

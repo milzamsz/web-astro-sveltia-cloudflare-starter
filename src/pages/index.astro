@@ -1,0 +1,46 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Hero from "../components/Hero.astro";
+import FeatureGrid from "../components/FeatureGrid.astro";
+import TrustBlock from "../components/TrustBlock.astro";
+import { t } from "../i18n/ui";
+
+const locale = (Astro.currentLocale || "id") as "id" | "en";
+const isId = locale === "id";
+---
+
+<BaseLayout
+  title={t(locale, "nav.home")}
+  description={isId
+    ? "Boilerplate multilingual untuk website marketing."
+    : "Multilingual boilerplate for marketing websites."}
+  locale={locale}
+  path="/"
+>
+  <Hero
+    title={t(locale, "hero.title")}
+    content={t(locale, "hero.subtitle")}
+    ctaText={t(locale, "hero.cta")}
+    ctaHref="/services"
+    locale={locale}
+  />
+
+  <FeatureGrid
+    title={isId ? "Mengapa Memilih Kami" : "Why Choose Us"}
+    features={[
+      { title: isId ? "Performa Tinggi" : "High Performance", description: isId ? "Static generation + edge deployment untuk waktu muat tercepat." : "Static generation + edge deployment for fastest load times." },
+      { title: isId ? "Multilingual" : "Multilingual", description: isId ? "Dukungan bahasa penuh dengan routing i18n built-in." : "Full language support with built-in i18n routing." },
+      { title: isId ? "SEO Siap" : "SEO Ready", description: isId ? "Meta tags, sitemap, dan JSON-LD structured data." : "Meta tags, sitemap, and JSON-LD structured data." },
+    ]}
+  />
+
+  <TrustBlock
+    title={isId ? "Dipercaya oleh" : "Trusted by"}
+    items={[
+      { name: "Company A" },
+      { name: "Company B" },
+      { name: "Company C" },
+      { name: "Company D" },
+    ]}
+  />
+</BaseLayout>

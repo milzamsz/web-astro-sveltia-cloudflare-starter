@@ -1,0 +1,60 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import { t } from "../i18n/ui";
+import Hero from "../components/Hero.astro";
+import FeatureGrid from "../components/FeatureGrid.astro";
+import CTA from "../components/CTA.astro";
+
+const locale = (Astro.currentLocale || "id") as "id" | "en";
+
+const allPages: CollectionEntry<"pages">[] = await getCollection("pages");
+const page = allPages.find(
+  (p) => p.data.slug === "contact" && p.data.locale === locale,
+);
+
+interface PageSection {
+  type: string;
+  title?: string;
+  content?: string;
+  items?: { title?: string; description?: string; icon?: string }[];
+}
+
+const sections: PageSection[] = page?.data.sections || [];
+const heroSection = sections.find((s) => s.type === "hero");
+const featuresSection = sections.find((s) => s.type === "features");
+const ctaSection = sections.find((s) => s.type === "cta");
+---
+
+<BaseLayout
+  title={page?.data.title || t(locale, "nav.contact")}
+  description={page?.data.description}
+  locale={locale}
+  path={"/contact"}
+>
+  {heroSection && (
+    <Hero title={heroSection.title || page?.data.title || ""} content={heroSection.content} locale={locale} />
+  )}
+  {featuresSection && (
+    <FeatureGrid title={featuresSection.title} features={(featuresSection.items || []).map((i) => ({ title: i.title || "", description: i.description || "", icon: i.icon }))} />
+  )}
+  {ctaSection && (
+    <CTA title={ctaSection.title || ""} content={ctaSection.content} locale={locale} />
+  )}
+
+  <section class="contact-placeholder container">
+    <div class="contact-placeholder__map">
+      <div class="contact-placeholder__map-inner">
+        <p>{locale === "id" ? "Peta akan terintegrasi" : "Map integration coming soon"}</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact-placeholder { padding-block: var(--space-2xl); }
+  .contact-placeholder__map { border: 2px dashed var(--color-border); border-radius: 0.5rem; overflow: hidden; }
+  .contact-placeholder__map-inner { display: flex; align-items: center; justify-content: center; height: 16rem; background: var(--color-bg-secondary); }
+  .contact-placeholder__map-inner p { color: var(--color-text-secondary); font-size: 0.9375rem; }
+</style>

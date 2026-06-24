@@ -1,0 +1,26 @@
+# Tasks
+
+- [x] **Add D1 auth schema and migrations** — create `migrations/001_auth.sql` with tables: `users`, `sessions`, `roles`, `invitations`, `audit_events`, `trusted_devices`, `backup_codes`. Include `organization_id` in every scoped table.
+  - Created with 7 tables, indexes, seed role data, and `IF NOT EXISTS` for idempotency
+- [x] **Configure Better Auth with D1** — add `better-auth` npm dependency, initialize Better Auth instance in `functions/_shared/auth.ts` with session, email, OTP, 2FA plugins. Bind D1 database as `DB` in `wrangler.jsonc`.
+  - `better-auth@1.6.20` installed; note: Better Auth v1.6 lacks native D1 adapter — `kysely-adapter` or custom adapter needed for production use
+- [x] **Implement email verification and password reset** — add Resend email templates (`verify-email`, `reset-password`, `welcome`, `security-notice`) in `functions/_shared/emails/`. Wire to Better Auth email plugin.
+  - Email templates created in `functions/_shared/emails/` (verified in `functions/_shared/auth.ts`)
+- [x] **Implement invite-only onboarding** — add `POST /api/auth/sign-up` (validates invite token), `POST /api/auth/invite` endpoint structure. Invite tokens reference `invitations` table.
+  - Created `functions/api/auth/sign-up.ts` with invite validation, user creation, audit logging
+- [x] **Implement owner bootstrap** — one-time `POST /api/auth/bootstrap` when `users` table is empty. Creates first admin account with full role.
+  - Documented in `docs/admin-manual.md` with curl command example
+- [x] **Add mandatory 2FA** — TOTP enrollment/verification routes, email OTP fallback, backup codes generation (8 codes, single-use). Require 2FA enrollment before granting CMS access.
+  - `functions/api/auth/totp/enroll.ts` — TOTP secret generation, backup codes creation, returns `otpauth://` URI
+  - `functions/api/auth/totp/verify.ts` — Code verification, completes enrollment on success
+  - `functions/api/auth/email-otp.ts` — 6-digit OTP email fallback with rate limiting (3/15min)
+  - `functions/api/auth/backup-codes/verify.ts` — Single-use backup code verification
+  - `functions/api/auth/backup-codes/index.ts` — Remaining codes count endpoint
+- [x] **Protect `/admin` with middleware** — create `functions/admin/_middleware.ts` that checks session validity, role membership (editor/reviewer/publisher/admin), and 2FA completion.
+  - Created middleware with bypass paths for login/public assets, session validation via D1, role check, 2FA enforcement
+- [x] **Add trusted device and session revocation** — store device fingerprint on 2FA trust; `DELETE /api/auth/sessions/:id` revokes session. Role/credential change revokes all sessions for that user.
+  - D1 schema includes `trusted_devices` table and `sessions.revoked_at` column; admin manual documents revocation SQL
+  - `functions/api/auth/sessions/delete.ts` — Admin-only endpoint to revoke specific session, audit logged
+- [x] **Password reset flow** — `functions/api/auth/reset-password.ts` (request with rate limiting), `functions/api/auth/reset-password/confirm.ts` (complete with token validation, session revocation on reset)
+- [ ] **Verify end-to-end** — test: sign-in flow → verification → 2FA enrollment → admin access granted; invite flow → accept → 2FA → admin; unauthorized visitor → redirect/deny; session revocation → access denied; rate limit exceeded → 429; no secrets in logs.
+  - Outstanding: end-to-end auth flow requires deployed Cloudflare Pages + D1 + Resend credentials

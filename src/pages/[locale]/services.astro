@@ -1,0 +1,135 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import { t } from "../../i18n/ui";
+import { resolveRoute } from "../../i18n/routes";
+import { jsonLdService } from "../../lib/seo";
+import Hero from "../../components/Hero.astro";
+
+const locale = (Astro.currentLocale || "id") as "id" | "en";
+const isId = locale === "id";
+
+const allServices: CollectionEntry<"services">[] = await getCollection("services");
+const services = allServices
+  .filter((s) => s.data.locale === locale)
+  .sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout
+  title={t(locale, "nav.services")}
+  description={isId ? "Layanan pengembangan website modern" : "Modern website development services"}
+  locale={locale}
+  path={"/services"}
+>
+  <Hero
+    title={isId ? "Layanan Kami" : "Our Services"}
+    content={isId
+      ? "Solusi lengkap untuk kebutuhan website marketing Anda."
+      : "Complete solutions for your marketing website needs."}
+    locale={locale}
+  />
+
+  <section class="services-list container">
+    {services.length === 0 && (
+      <p class="services-list__empty">
+        {isId ? "Belum ada layanan tersedia." : "No services available yet."}
+      </p>
+    )}
+    <div class="services-list__grid">
+      {services.map((service) => (
+        <article class="service-card">
+          <div class="service-card__content">
+            <h2 class="service-card__title">
+              <a href={resolveRoute(locale, `/services/${service.data.slug}`)}>
+                {service.data.title}
+              </a>
+            </h2>
+            <p class="service-card__desc">{service.data.description}</p>
+            <div class="service-card__features">
+              {service.data.features.slice(0, 3).map((feature: string) => (
+                <span class="service-card__feature">{feature}</span>
+              ))}
+            </div>
+            {service.data.priceRange && (
+              <span class="service-card__price">{service.data.priceRange}</span>
+            )}
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .services-list {
+    padding-block: var(--space-2xl);
+  }
+
+  .services-list__empty {
+    color: var(--color-text-secondary);
+    text-align: center;
+  }
+
+  .services-list__grid {
+    display: grid;
+    gap: var(--space-xl);
+    grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
+  }
+
+  .service-card {
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: var(--space-xl);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .service-card:hover {
+    border-color: var(--color-border-hover);
+    box-shadow: var(--shadow-md);
+  }
+
+  .service-card__title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 var(--space-sm);
+  }
+
+  .service-card__title a {
+    color: var(--color-text-primary);
+    text-decoration: none;
+  }
+
+  .service-card__title a:hover {
+    color: var(--color-brand-primary);
+  }
+
+  .service-card__desc {
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+    margin: 0 0 var(--space-md);
+    line-height: 1.6;
+  }
+
+  .service-card__features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-md);
+  }
+
+  .service-card__feature {
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    background: var(--color-bg-tertiary);
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+  }
+
+  .service-card__price {
+    display: inline-block;
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: var(--color-brand-primary);
+  }
+</style>

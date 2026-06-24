@@ -1,0 +1,15 @@
+# Site Settings
+# Managed through Sveltia CMS → Settings → Site Settings
+name: "Astro Sveltia Cloudflare"
+description: "Multilingual marketing website boilerplate."
+url: "https://example.com"
+defaultLocale: id
+analyticsProvider: none
+gtmId: ""
+umamiUrl: ""
+umamiId: ""
+mapLatitude: "-6.2088"
+mapLongitude: "106.8456"
+orgName: ""
+orgEmail: ""
+socialLinks: []

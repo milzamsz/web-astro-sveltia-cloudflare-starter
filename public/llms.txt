@@ -1,0 +1,13 @@
+# Astro Sveltia Cloudflare
+
+Multilingual marketing website boilerplate with Astro, Sveltia CMS, and Cloudflare Pages.
+
+## Core Pages
+
+- Homepage, About, Services, Pricing, Contact, Blog, Documentation
+
+## Stack
+
+- Astro (static site generator)
+- Sveltia CMS (content editing via browser)
+- Cloudflare Pages + D1 + R2 (deployment and storage)

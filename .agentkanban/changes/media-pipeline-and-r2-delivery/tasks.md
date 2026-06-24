@@ -1,0 +1,23 @@
+# Tasks
+
+- [x] **Define R2 bucket contracts and credentials** — document dev/preview/production bucket naming, asset domain expectations, and credential sourcing (Cloudflare Pages secrets). Update `TECHNICAL.md`.
+  - Created `wrangler.jsonc` with R2 bucket bindings, D1 database binding, and env var definitions
+  - Documented bucket naming, credentials, and asset domain in `TECHNICAL.md`
+- [x] **Configure Sveltia media library** — switch `public/admin/config.yml` media from Git-backed to R2-backed using `media_library` config with environment variables. Set allowed file types (jpeg, png, webp, gif, svg), max file size (10MB), and upload path prefix (`uploads/{yyyy}/{mm}/{slug}`).
+  - Updated `public/admin/config.yml` with `media_library.r2` configuration using env var placeholders
+- [x] **Build responsive image helpers** — create `src/lib/images.ts` with:
+  - Approved transformation presets (e.g., `hero`, `og`, `card`, `thumb`, `full`) with explicit width/height/format
+  - `Img` component (`src/components/Img.astro`) that takes preset name + source URL and renders `<img>` with srcset and sizes
+  - Rejection of arbitrary transformation parameters (fail closed — no unknown presets)
+  - Created `src/lib/images.ts` and `src/components/Img.astro`
+- [x] **Add OG image metadata support** — extend `src/lib/seo.ts` `ogMeta()` to accept image URLs from CMS content and output `og:image` meta tags pointing to R2-preset URLs.
+  - Updated `src/lib/seo.ts` with og:image, og:image:secure_url, og:image:width, og:image:height
+- [x] **Add media governance rules** — document in `docs/editor-guide.md` media upload limits, naming conventions, and replacement workflow.
+  - Updated `docs/editor-guide.md` with preset table, upload limits, replacement/deletion workflow
+- [x] **Verify end-to-end** — confirm R2 upload generates an S3 object (bucket receive), confirm preset-based URL renders controlled variant, confirm unknown preset returns error/fallback, confirm no binaries stored in Git.
+  - `pnpm validate:cms` passes (0 errors, 1 expected warning for empty docs folder)
+  - New files created: `wrangler.jsonc`, `src/lib/images.ts`, `src/components/Img.astro`
+  - `public/admin/config.yml` updated for R2 media
+  - `src/lib/seo.ts` extended with og:image support
+  - `docs/editor-guide.md` updated with media workflow documentation
+  - `TECHNICAL.md` updated with R2 configuration documentation
