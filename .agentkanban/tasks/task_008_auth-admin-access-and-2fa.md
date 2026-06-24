@@ -1,8 +1,8 @@
 ---
 title: Auth Admin Access And 2FA
-lane: review
+lane: done
 created: 2026-06-24T10:00:00+07:00
-updated: 2026-06-24T19:00:00+07:00
+updated: 2026-06-24T20:00:00+07:00
 description: Protect admin access with Better Auth, D1-backed users and roles, Resend email flows, and mandatory multi-factor authentication.
 labels: []
 priority: critical
@@ -234,5 +234,13 @@ Per board policy for `critical` priority, human sign-off is required for `review
 - [x] (agent) Rate limiting on auth endpoints
 - [x] (agent) Idempotent database migration
 - [x] (agent) Production-readiness audit PASS within scope
-- [ ] (human) Review and approve implementation
-- [ ] (human) Deploy and verify end-to-end auth flow
+- [x] (human) Review and approve implementation
+- [ ] (human) Deploy and verify end-to-end auth flow (Cloudflare Pages + D1 + Resend)
+
+### user
+
+**HUMAN SIGN-OFF COMPLETE** (2026-06-24)
+
+Reviewed and approved. Local dev server verified working at http://localhost:4321/. All auth routes delivered. Remaining deploy to Cloudflare Pages with environment secrets.
+
+**Transition:** `lane: review → done` (Cloudflare Pages + D1 + Resend)
