@@ -1,30 +1,29 @@
 {
-  "$schema": "https://schema.cloudflare.com/wrangler/2024-10-01",
-  "name": "astro-sveltia-cloudflare",
-  "compatibility_date": "2026-06-24",
-  "compatibility_flags": ["nodejs_compat"],
-  "pages_build_output_dir": "./dist",
-
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "astro-sveltia-db",
-      "database_id": "<D1_DATABASE_ID>"
-    }
-  ],
-
-  "r2_buckets": [
-    {
-      "binding": "R2_MEDIA",
-      "bucket_name": "astro-sveltia-media"
-    }
-  ],
-
-  "vars": {
-    "SVELTIA_BACKEND_REPO": "milzamsz/web-astro-sveltia-cloudflare-starter",
-    "SVELTIA_BACKEND_BRANCH": "main",
-    "SVELTIA_BASE_URL": "https://web-astro-sveltia-cloudflare-starter.pages.dev",
-    "TOTP_ISSUER": "Astro Sveltia Cloudflare",
-    "PNPM_VERSION": "8.15.0"
-  }
+	"$schema": "https://schema.cloudflare.com/wrangler/2024-10-01",
+	"name": "astro-sveltia-cloudflare",
+	"compatibility_date": "2026-06-24",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"pages_build_output_dir": "./dist",
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "astro-sveltia-db",
+			"database_id": "66700885-b5cd-48da-bd42-155eb3578b32"
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "R2_MEDIA",
+			"bucket_name": "astro-sveltia-media"
+		}
+	],
+	"vars": {
+		"SVELTIA_BACKEND_REPO": "milzamsz/web-astro-sveltia-cloudflare-starter",
+		"SVELTIA_BACKEND_BRANCH": "main",
+		"SVELTIA_BASE_URL": "https://web-astro-sveltia-cloudflare-starter.pages.dev",
+		"TOTP_ISSUER": "Astro Sveltia Cloudflare",
+		"PNPM_VERSION": "8.15.0"
+	}
 }
