@@ -159,8 +159,171 @@ If the admin account is locked out:
    ```bash
    wrangler d1 execute DB --command "SELECT id, email, role FROM users WHERE role = 'admin'"
    ```
+2.   ```
 2. Reset the admin's password via the password reset flow.
 3. If necessary, clear the rate limit counters:
    ```sql
    DELETE FROM audit_events WHERE action = 'sign_in_attempt' AND target = 'admin@example.com';
    ```
+
+---
+
+## Deployment Operations
+
+### CI/CD Pipeline
+
+The project uses GitHub Actions for automated deployment:
+
+| Workflow | Trigger | Action |
+|----------|---------|--------|
+| **CI** | Push to `main` / `content-preview` / PR | Lint, type-check, build, validate |
+| **Preview Deploy** | Push to `content-preview` | Deploy to Cloudflare Pages preview branch |
+| **Release** | Push tag `v*` | Build, deploy to production, create GitHub Release |
+| **Dependabot** | Weekly (Monday) | Auto-PR for dependency updates |
+| **Secret Scan** | Every push | trufflehog secret detection |
+
+### Deploying to Production
+
+```bash
+# Option 1: Via tag (triggers full release workflow)
+git tag -a v0.1.0 -m "v0.1.0"
+git push origin v0.1.0
+
+# Option 2: Direct push to main (auto-deploys via CI)
+git push origin main
+```
+
+**Production deployment includes:**
+1. Build with `pnpm run build`
+2. Deploy `dist/` to Cloudflare Pages (production branch)
+3. Create GitHub Release with auto-generated changelog
+
+### Deploying to Preview
+
+```bash
+# Content preview branch - auto-deploys on push
+git checkout content-preview
+git merge main
+git push origin content-preview
+```
+
+**Preview deployment:**
+- Deploys to `content-preview` branch on Cloudflare Pages
+- Requires authentication (Better Auth middleware)
+- Sveltia CMS loads with `branch: content-preview` config
+- Editors can preview content changes before merging to main
+
+### Manual Deployment (Emergency)
+
+If CI is unavailable:
+
+```bash
+# Build locally
+pnpm run build
+
+# Deploy to Cloudflare Pages
+wrangler pages deploy dist \
+  --project-name=astro-sveltia-cloudflare \
+  --branch=main \
+  --commit-dirty=true
+
+# Or for preview
+wrangler pages deploy dist \
+  --project-name=astro-sveltia-cloudflare \
+  --branch=content-preview \
+  --commit-dirty=true
+```
+
+### Rollback
+
+**Quick rollback via Cloudflare Pages:**
+1. Go to Cloudflare Pages dashboard → your project
+2. Click "Deployments" tab
+3. Find previous successful deployment
+4. Click "Rollback to this deployment"
+
+**Git-based rollback:**
+```bash
+# Revert last commit
+git revert HEAD
+git push origin main
+
+# Or rollback to specific tag
+git checkout v0.0.1
+git push origin HEAD:main --force
+```
+
+---
+
+## R2 Media Management
+
+### Cleanup Worker
+
+The cleanup worker manages R2 storage:
+
+```bash
+# Dry run (default) - shows what would be deleted
+curl -X POST https://<site>/api/cleanup
+
+# Quarantine mode - moves unreferenced files to quarantine folder
+curl -X POST https://<site>/api/cleanup \
+  -H "Content-Type: application/json" \
+  -d '{"mode":"quarantine"}'
+
+# Delete mode - permanently deletes unreferenced files
+curl -X POST https://<site>/api/cleanup \
+  -H "Content-Type: application/json" \
+  -d '{"mode":"delete"}'
+```
+
+### Media Manifest
+
+The build process generates `public/media-manifest.json` mapping all referenced R2 objects. The cleanup worker compares this against actual R2 objects to find orphans.
+
+### Grace Period
+
+Orphaned media is retained for **30 days** by default before cleanup can remove it. This allows recovery from accidental content deletion.
+
+---
+
+## Monitoring & Observability
+
+### GitHub Actions Logs
+
+All CI/CD runs are visible in the **Actions** tab. Key metrics:
+- Build time (target: < 3 min)
+- Deploy time (target: < 2 min)
+- Test pass rate (target: 100%)
+
+### Cloudflare Analytics
+
+In Cloudflare Pages dashboard:
+- Request volume and latency
+- Geographic distribution
+- Error rates
+
+### D1 Query Performance
+
+```bash
+# Show slow queries (if available)
+wrangler d1 execute DB --command "EXPLAIN QUERY PLAN SELECT ..." --env production
+```
+
+---
+
+## Incident Response
+
+| Severity | Example | Response Time | Action |
+|----------|---------|---------------|--------|
+| **Critical** | Data breach, total outage | < 1 hour | Page maintainer, initiate rollback |
+| **High** | Auth broken, CMS down | < 4 hours | Investigate logs, deploy fix |
+| **Medium** | Performance degradation | < 24 hours | Analyze, schedule fix |
+| **Low** | Minor bug, typo | Next sprint | Create issue, fix in next release |
+
+### Incident Checklist
+
+1. **Assess** — Check CI logs, Cloudflare status, D1 health
+2. **Communicate** — Post in team channel, create GitHub issue
+3. **Mitigate** — Rollback if needed, apply hotfix
+4. **Resolve** — Root cause analysis, prevent recurrence
+5. **Document** — Update runbook, add regression test

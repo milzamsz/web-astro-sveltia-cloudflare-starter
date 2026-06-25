@@ -15,7 +15,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "lint": "pnpm run lint:js && pnpm run lint:css && pnpm run type-check && pnpm run validate:i18n",
+    "lint": "pnpm run lint:js && pnpm run lint:css && pnpm run type-check && pnpm run validate:i18n && pnpm run validate:secrets",
     "lint:js": "eslint --ext .js,.jsx,.ts,.tsx src/",
     "lint:css": "stylelint src/",
     "type-check": "astro check",
@@ -23,6 +23,7 @@
     "format:check": "prettier --check 'src/**/*.{astro,ts,tsx,css}'",
     "validate:i18n": "node scripts/validate-i18n.js",
     "validate:cms": "node scripts/validate-cms-config.cjs",
+    "validate:secrets": "node scripts/validate-secrets.cjs",
     "postbuild": "pagefind --site dist && node scripts/generate-media-manifest.cjs && node scripts/generate-llms-txt.cjs"
   },
   "dependencies": {

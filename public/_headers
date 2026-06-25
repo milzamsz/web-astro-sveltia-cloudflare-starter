@@ -1,0 +1,24 @@
+# CSP + Security Headers for Cloudflare Pages
+# See: https://developers.cloudflare.com/pages/platform/headers/
+
+# CSP Policy
+# - default-src 'self': allow same-origin resources
+# - script-src: allow self, inline (for Astro hydration), and trusted CDNs
+# - style-src: allow self and inline (Tailwind generates inline styles)
+# - frame-src: allow Turnstile challenge and OpenStreetMap embed
+# - connect-src: allow self and API endpoints (Resend, GitHub, Turnstile)
+# - img-src: allow self, data:, and HTTPS images
+# - font-src: allow self and data: (for inline fonts)
+# - object-src 'none': disallow plugins
+# - base-uri 'self': restrict <base> tag
+# - form-action 'self': restrict form submissions to same origin
+# - frame-ancestors 'none': prevent clickjacking
+
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' cdn.jsdelivr.net challenges.cloudflare.com umami.example.com www.googletagmanager.com; style-src 'self' 'unsafe-inline' cdn.jsdelivr.net; frame-src 'self' challenges.cloudflare.com www.openstreetmap.org; connect-src 'self' api.resend.com api.github.com challenges.cloudflare.com www.google-analytics.com; img-src 'self' data: https:; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
