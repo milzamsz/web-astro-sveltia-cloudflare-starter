@@ -9,11 +9,10 @@
 
 backend:
   name: github
-  repo: <owner>/<repo>          # Replace with actual repo or inject via env
-  branch: main                  # Production branch; editors change to content-preview for drafts
-  base_url: https://auth.example.com
-  auth_endpoint: auth           # Sveltia OAuth endpoint
-  site_domain: example.com
+  repo: milzamsz/web-astro-sveltia-cloudflare-starter
+  branch: main
+  base_url: https://web-astro-sveltia-cloudflare-starter.pages.dev
+  auth_endpoint: auth
 
 # Media: R2-backed uploads via environment-specific bucket bindings.
 # - R2_BUCKET_NAME: set via Cloudflare Pages secrets (astro-sveltia-media)
