@@ -56,3 +56,15 @@ Pull requests trigger verification workflows; approved changes feed deployments 
 - root docs and support guides.
 - security policy files.
 - final verification scripts.
+
+## Production Readiness
+
+| Category | Coverage |
+|---|---|
+| **Org-scoping** | Environment-specific Cloudflare Pages deployments (preview per PR, production per release). CI secrets injected via GitHub Actions secrets. No cross-org data access. |
+| **Audit events** | CI pipeline produces deployment logs; Dependabot alerts logged; secret scanning findings logged; security regressions reopen tasks with audit trail. |
+| **Secret references** | All credentials via Cloudflare Pages secrets or GitHub Actions secrets. Dependabot alerts on vulnerable deps. Secret scanning blocks committed secrets. |
+| **Signed commands** | CI workflows run `pnpm run lint`, `pnpm run build`, `pnpm validate:cms`, `pnpm validate:i18n` — all typed, deterministic, reproducible. No raw shell. |
+| **Quotas** | GitHub Actions free tier (2000 min/month). Cloudflare Pages free tier (500 builds/month). Dependabot unlimited alerts. |
+| **Migration idempotency** | No schema changes. Workflow additions are additive. Rollback: revert workflow file. |
+| **Runbooks** | `README.md` quick-start, `SETUP.md` deployment, `docs/admin-manual.md` recovery, `CONTRIBUTING.md` contribution guide, `SECURITY.md` disclosure policy. |
