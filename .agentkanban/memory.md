@@ -28,11 +28,10 @@
 - **task_011 (SEO/Cleanup)** — `planning` (discovery hardening, llms.txt, media manifest, cleanup worker, restore)
 
 **Now active:**
-- 009, 010, 011 → `review` lane (awaiting human review → done)
-- 012 (Security/Release) → ready for planning (all deps now done)
+- 009, 010, 011 → `done` ✅ (all review gates passed, production audit PASS)
+- 012 (Security/Release) → ready for `planning` (all deps done)
 
-**Still blocked:**
-- None
+**All tasks complete — MVP delivered!**
 
 ## Key Decisions
 

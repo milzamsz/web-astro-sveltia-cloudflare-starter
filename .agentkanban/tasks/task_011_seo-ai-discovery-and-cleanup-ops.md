@@ -1,9 +1,9 @@
 ---
 title: SEO AI Discovery And Cleanup Ops
 slug: seo-ai-discovery-and-cleanup-ops
-lane: review
+lane: done
 created: 2026-06-24T10:00:00+07:00
-updated: 2026-06-25T21:00:00+07:00
+updated: 2026-06-26T01:30:00+07:00
 description: Finish SEO and AI discovery artifacts, generate production-only discovery outputs, and add the media cleanup worker and restore process.
 labels: []
 priority: high

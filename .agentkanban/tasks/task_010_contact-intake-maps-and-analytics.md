@@ -1,9 +1,9 @@
 ---
 title: Contact Intake Maps And Analytics
 slug: contact-intake-maps-and-analytics
-lane: review
+lane: done
 created: 2026-06-24T10:00:00+07:00
-updated: 2026-06-25T19:00:00+07:00
+updated: 2026-06-26T01:30:00+07:00
 description: Deliver the public contact flow, map configuration, Turnstile protection, submission handling, and analytics adapter behavior.
 labels: []
 priority: high

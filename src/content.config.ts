@@ -5,7 +5,11 @@ import { glob } from "astro/loaders";
 import { z } from "astro:content";
 
 const blog = defineCollection({
-  loader: glob({ pattern: "**/*.md", base: "./src/content/blog" }),
+  loader: glob({
+    pattern: "**/*.md",
+    base: "./src/content/blog",
+    generateId: ({ entry }) => entry.replace(/\.[^/.]+$/, ""),
+  }),
   schema: z.object({
     title: z.string(),
     description: z.string(),
@@ -39,7 +43,11 @@ const pageSectionSchema = z.object({
 });
 
 const pages = defineCollection({
-  loader: glob({ pattern: "**/*.md", base: "./src/content/pages" }),
+  loader: glob({
+    pattern: "**/*.md",
+    base: "./src/content/pages",
+    generateId: ({ entry }) => entry.replace(/\.[^/.]+$/, ""),
+  }),
   schema: z.object({
     locale: z.enum(["id", "en"]),
     slug: z.string(),
@@ -53,7 +61,11 @@ const pages = defineCollection({
 });
 
 const services = defineCollection({
-  loader: glob({ pattern: "**/*.md", base: "./src/content/services" }),
+  loader: glob({
+    pattern: "**/*.md",
+    base: "./src/content/services",
+    generateId: ({ entry }) => entry.replace(/\.[^/.]+$/, ""),
+  }),
   schema: z.object({
     locale: z.enum(["id", "en"]),
     slug: z.string(),

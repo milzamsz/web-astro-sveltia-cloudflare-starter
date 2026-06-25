@@ -1,11 +1,12 @@
 ---
+translationKey: about
 locale: en
 slug: about
-title: About Us
+title: About Us!
 description: Meet the team and vision behind the modern multilingual marketing website boilerplate.
 sections:
   - type: hero
-    title: About Us
+    title: About Us!
     content: We build solid foundations for modern marketing websites with multilingual support from day one.
   - type: features
     title: Our Philosophy
@@ -23,7 +24,6 @@ sections:
     content: Partner with a boilerplate designed for scale.
 isLegal: false
 order: 1
-translationKey: about
 ---
 
 # About Us
