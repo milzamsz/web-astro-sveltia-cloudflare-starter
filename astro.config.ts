@@ -6,8 +6,8 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   site: "https://example.com",
   i18n: {
-    defaultLocale: "id",
-    locales: ["id", "en"],
+    defaultLocale: "en",
+    locales: ["en", "id"],
     prefixDefaultLocale: true,
   },
   integrations: [
@@ -16,10 +16,10 @@ export default defineConfig({
     }),
     sitemap({
       i18n: {
-        defaultLocale: "id",
+        defaultLocale: "en",
         locales: {
-          id: "id-ID",
           en: "en-US",
+          id: "id-ID",
         },
       },
     }),

@@ -24,8 +24,6 @@
 		"SVELTIA_BACKEND_BRANCH": "main",
 		"SVELTIA_BASE_URL": "https://web-astro-sveltia-cloudflare-starter.pages.dev",
 		"TOTP_ISSUER": "Astro Sveltia Cloudflare",
-		"PNPM_VERSION": "8.15.0",
-		"GITHUB_CLIENT_ID": "Ov23liWswHDbnTq91Bvd",
-		"GITHUB_CLIENT_SECRET": ""
+		"PNPM_VERSION": "8.15.0"
 	}
 }
