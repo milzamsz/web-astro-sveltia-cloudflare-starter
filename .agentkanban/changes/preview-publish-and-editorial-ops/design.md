@@ -58,3 +58,15 @@ CMS commits to preview branch; Cloudflare preview build runs; reviewers inspect 
 - `functions/preview/_middleware.ts`
 - `functions/_shared/github.ts`
 - preview UI components.
+
+## Production Readiness
+
+| Category | Coverage |
+|---|---|
+| **Org-scoping** | Branch isolation (`content-preview` vs `main`) provides environment-scoped preview. GitHub API token scoped to single repo. Audit events include `organization_id`. |
+| **Audit events** | Every publish, discard, and build-status action writes to `audit_events` table with `actor_id`, `action`, `target` (branch name), and `metadata` (deploy URL, commit SHA). |
+| **Secret references** | `GITHUB_PAT` stored as Cloudflare Pages secret — never in code. GitHub token has minimum required scopes (`repo: contents`, `pull_requests: write`). |
+| **Signed commands** | Publish/discard endpoints authenticated via session cookie (existing auth middleware). No raw shell access. Actions are idempotent: publishing same commits twice is safe. |
+| **Quotas** | GitHub API rate limiting (5000/hr). Preview build concurrency limited by Cloudflare Pages plans. |
+| **Migration idempotency** | No new D1 schema needed — reuses existing `audit_events` table. Additive only. Rollback by removing endpoints. |
+| **Runbooks** | Publish/discard documented in `docs/editor-guide.md`. Build status monitoring in Cloudflare Pages dashboard. Conflict resolution documented in admin manual. |

@@ -1,5 +1,6 @@
 ---
 title: Core Marketing Pages
+slug: core-marketing-pages
 lane: done
 created: 2026-06-24T10:00:00+07:00
 updated: 2026-06-24T07:30:00+07:00

@@ -58,4 +58,20 @@ Visitors submit contact requests; server verifies Turnstile and validation; D1 s
 - `functions/api/contact.ts`
 - `functions/_shared/turnstile.ts`
 - analytics components and config.
+
+## Production Readiness
+
+| Category | Coverage |
+|---|---|
+| **Org-scoping** | Contact submissions scoped via `organization_id` in D1. Analytics adapters configurable per environment via CMS settings. Maps section disabled in preview. |
+| **Audit events** | Submission events logged with `action: 'contact_submission'`, `target: email_hash`, `ip_address` hashed. Rate limit events tracked by IP hash. |
+| **Secret references** | `TURNSTILE_SECRET_KEY`, `RESEND_API_KEY` as Cloudflare Pages secrets. Turnstile site key public (injected via env var). |
+| **Signed commands** | Contact form submission authenticated via Turnstile token (server-verified). No raw shell. Honeypot provides automated bot detection. |
+| **Quotas** | Rate limiting: 5 submissions per IP hash per 15min. Duplicate detection: same email+body within 1h returns 409. Email volume limited by Resend plan. |
+| **Migration idempotency** | `002_contact.sql` uses `CREATE TABLE IF NOT EXISTS`. Additive only. Rollback by dropping table (data loss — backup first). |
+| **Runbooks** | Contact submission flow documented in `docs/editor-guide.md`. Analysis reporting via D1 queries documented in admin manual. |
+
+---
+
+*Update `002_contact.sql` in `migrations/` during implementation.*
 - D1 migrations.

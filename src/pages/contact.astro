@@ -3,6 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 import { t } from "../i18n/ui";
+import { SITE_CONFIG } from "../lib/site-config";
 import Hero from "../components/Hero.astro";
 import FeatureGrid from "../components/FeatureGrid.astro";
 import CTA from "../components/CTA.astro";
@@ -13,6 +14,19 @@ const allPages: CollectionEntry<"pages">[] = await getCollection("pages");
 const page = allPages.find(
   (p) => p.data.slug === "contact" && p.data.locale === locale,
 );
+
+const allSettings = await getCollection("settings");
+const settings = allSettings[0]?.data as {
+  mapLatitude?: string;
+  mapLongitude?: string;
+  orgName?: string;
+  orgEmail?: string;
+} | undefined;
+
+const lat = settings?.mapLatitude || "-6.2088";
+const lng = settings?.mapLongitude || "106.8456";
+const hasMap = lat && lng;
+const isId = locale === "id";
 
 interface PageSection {
   type: string;
@@ -43,18 +57,221 @@ const ctaSection = sections.find((s) => s.type === "cta");
     <CTA title={ctaSection.title || ""} content={ctaSection.content} locale={locale} />
   )}
 
-  <section class="contact-placeholder container">
-    <div class="contact-placeholder__map">
-      <div class="contact-placeholder__map-inner">
-        <p>{locale === "id" ? "Peta akan terintegrasi" : "Map integration coming soon"}</p>
+  <section class="contact-section container">
+    <div class="contact-section__grid">
+      <div class="contact-section__form">
+        <h2>{isId ? "Kirim Pesan" : "Send a Message"}</h2>
+        <form id="contact-form" novalidate>
+          <!-- Honeypot field — hidden from users, traps bots -->
+          <div style="position: absolute; left: -9999px;" aria-hidden="true">
+            <label for="website">Website</label>
+            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <div class="form-field">
+            <label for="name">{isId ? "Nama" : "Name"} <span aria-label="required">*</span></label>
+            <input type="text" id="name" name="name" required minlength="2" maxlength="100" placeholder={isId ? "Nama Anda" : "Your name"} />
+          </div>
+
+          <div class="form-field">
+            <label for="email">Email <span aria-label="required">*</span></label>
+            <input type="email" id="email" name="email" required placeholder="you@example.com" />
+          </div>
+
+          <div class="form-field">
+            <label for="subject">{isId ? "Subjek" : "Subject"}</label>
+            <input type="text" id="subject" name="subject" maxlength="200" placeholder={isId ? "Subjek pesan" : "Message subject"} />
+          </div>
+
+          <div class="form-field">
+            <label for="message">{isId ? "Pesan" : "Message"} <span aria-label="required">*</span></label>
+            <textarea id="message" name="message" required minlength="10" maxlength="5000" rows="5" placeholder={isId ? "Tulis pesan Anda di sini..." : "Write your message here..."}></textarea>
+          </div>
+
+          <div id="turnstile-container" class="form-field"></div>
+
+          <div class="form-actions">
+            <button type="submit" id="submit-btn">
+              <span id="submit-text">{isId ? "Kirim Pesan" : "Send Message"}</span>
+              <span id="submit-loading" style="display:none">{isId ? "Mengirim..." : "Sending..."}</span>
+            </button>
+          </div>
+
+          <div id="form-success" class="form-message form-message--success" role="status" hidden>
+            {isId ? "Pesan Anda telah terkirim. Kami akan menghubungi Anda segera." : "Your message has been sent. We will get back to you soon."}
+          </div>
+          <div id="form-error" class="form-message form-message--error" role="alert" hidden></div>
+        </form>
+      </div>
+
+      <div class="contact-section__info">
+        {hasMap && (
+          <div class="contact-section__map">
+            <iframe
+              src={`https://www.openstreetmap.org/export/embed.html?bbox=${Number(lng) - 0.05}%2C${Number(lat) - 0.05}%2C${Number(lng) + 0.05}%2C${Number(lat) + 0.05}&layer=mapnik&marker=${lat}%2C${lng}`}
+              width="100%"
+              height="300"
+              style="border:0; border-radius: 8px;"
+              loading="lazy"
+              title={isId ? "Peta lokasi" : "Location map"}
+            ></iframe>
+            <p class="contact-section__address">
+              <a href={`https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=15/${lat}/${lng}`} target="_blank" rel="noopener noreferrer">
+                {isId ? "Lihat di OpenStreetMap" : "View on OpenStreetMap"}
+              </a>
+            </p>
+          </div>
+        )}
+
+        {settings?.orgEmail && (
+          <div class="contact-section__email">
+            <a href={`mailto:${settings.orgEmail}`}>{settings.orgEmail}</a>
+          </div>
+        )}
       </div>
     </div>
   </section>
+
+  <script>
+    const form = document.getElementById("contact-form") as HTMLFormElement;
+    const submitBtn = document.getElementById("submit-btn") as HTMLButtonElement;
+    const submitText = document.getElementById("submit-text") as HTMLElement;
+    const submitLoading = document.getElementById("submit-loading") as HTMLElement;
+    const successDiv = document.getElementById("form-success") as HTMLElement;
+    const errorDiv = document.getElementById("form-error") as HTMLElement;
+
+    // Load Turnstile
+    const turnstileScript = document.createElement("script");
+    turnstileScript.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+    turnstileScript.async = true;
+    turnstileScript.defer = true;
+    document.head.appendChild(turnstileScript);
+
+    let turnstileToken = "";
+
+    // Turnstile callback
+    (window as any).turnstileCallback = (token: string) => {
+      turnstileToken = token;
+    };
+
+    // Wait for Turnstile to load, then render
+    turnstileScript.onload = () => {
+      const turnstileContainer = document.getElementById("turnstile-container");
+      if (turnstileContainer && (window as any).turnstile) {
+        (window as any).turnstile.render(turnstileContainer, {
+          sitekey: "1x00000000000000000000AA", // Use actual site key in production
+          callback: "turnstileCallback",
+          theme: "light",
+        });
+      }
+    };
+
+    form?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errorDiv.hidden = true;
+      successDiv.hidden = true;
+
+      // Validate required fields
+      const name = (document.getElementById("name") as HTMLInputElement).value.trim();
+      const email = (document.getElementById("email") as HTMLInputElement).value.trim();
+      const message = (document.getElementById("message") as HTMLTextAreaElement).value.trim();
+
+      if (!name || !email || !message) {
+        errorDiv.textContent = "Please fill in all required fields.";
+        errorDiv.hidden = false;
+        return;
+      }
+
+      submitText.style.display = "none";
+      submitLoading.style.display = "inline";
+      submitBtn.disabled = true;
+
+      try {
+        const res = await fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name,
+            email,
+            subject: (document.getElementById("subject") as HTMLInputElement).value.trim(),
+            message,
+            "cf-turnstile-response": turnstileToken,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          errorDiv.textContent = data.message || "Something went wrong. Please try again.";
+          errorDiv.hidden = false;
+          return;
+        }
+
+        successDiv.hidden = false;
+        form.reset();
+        turnstileToken = "";
+        if ((window as any).turnstile) {
+          (window as any).turnstile.reset();
+        }
+      } catch {
+        errorDiv.textContent = "Network error. Please try again.";
+        errorDiv.hidden = false;
+      } finally {
+        submitText.style.display = "inline";
+        submitLoading.style.display = "none";
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
 </BaseLayout>
 
 <style>
-  .contact-placeholder { padding-block: var(--space-2xl); }
-  .contact-placeholder__map { border: 2px dashed var(--color-border); border-radius: 0.5rem; overflow: hidden; }
-  .contact-placeholder__map-inner { display: flex; align-items: center; justify-content: center; height: 16rem; background: var(--color-bg-secondary); }
-  .contact-placeholder__map-inner p { color: var(--color-text-secondary); font-size: 0.9375rem; }
+  .contact-section { padding-block: var(--space-2xl); }
+  .contact-section__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+  @media (max-width: 768px) {
+    .contact-section__grid { grid-template-columns: 1fr; }
+  }
+  .form-field { margin-bottom: 1rem; }
+  .form-field label { display: block; font-weight: 600; margin-bottom: 0.25rem; }
+  .form-field input,
+  .form-field textarea {
+    width: 100%;
+    padding: 0.625rem;
+    border: 1px solid var(--color-border, #d1d5db);
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: inherit;
+  }
+  .form-field textarea { resize: vertical; min-height: 120px; }
+  .form-actions { margin-top: 1.5rem; }
+  .form-actions button {
+    padding: 0.75rem 2rem;
+    background: var(--color-primary, #1e40af);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .form-actions button:disabled { opacity: 0.6; cursor: not-allowed; }
+  .form-message {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9375rem;
+  }
+  .form-message--success { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+  .form-message--error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+  .contact-section__map { margin-bottom: 1.5rem; }
+  .contact-section__map iframe { max-width: 100%; }
+  .contact-section__address { margin-top: 0.5rem; }
+  .contact-section__address a { color: var(--color-primary, #1e40af); }
+  .contact-section__email { margin-top: 1rem; }
+  .contact-section__email a { color: var(--color-primary, #1e40af); font-size: 1.125rem; }
 </style>

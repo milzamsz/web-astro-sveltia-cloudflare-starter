@@ -10,7 +10,7 @@
 backend:
   name: github
   repo: milzamsz/web-astro-sveltia-cloudflare-starter
-  branch: main
+  branch: content-preview
   base_url: https://web-astro-sveltia-cloudflare-starter.pages.dev
   auth_endpoint: auth
 

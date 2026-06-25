@@ -1,5 +1,6 @@
 ---
 title: Bootstrap Governance And Skills Lock
+slug: bootstrap-governance-and-skills-lock
 lane: done
 created: 2026-06-24T10:00:00+07:00
 updated: 2026-06-24T05:03:06.592Z

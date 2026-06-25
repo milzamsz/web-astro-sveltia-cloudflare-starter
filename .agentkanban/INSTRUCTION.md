@@ -139,6 +139,15 @@ For those tasks:
 
 Maintain `TECHNICAL.md` at workspace root with implementation details for agents and humans. Update the relevant section when behavior or workflow rules change.
 
+## Multi-Root Workspaces
+
+When multiple workspace folders are open in VS Code:
+
+- treat each folder as an independent project with its own `.agentkanban/` state
+- operate on the active project selected in the board UI
+- do not create `.agentkanban/` in an uninitialised folder unless that specific folder is initialised
+- keep each project's chosen profile and board policy isolated to that folder
+
 ## Workflow Profiles
 
 ### Lite profile
@@ -167,7 +176,7 @@ Guidance:
 - `in-progress`: implement the approved plan. Entering `in-progress` is **not** a separate human gate — an agent may carry an approved task from `planning` straight through implementation to `review` in one pass (the autonomous `planning -> review` flow). When running this flow, the task must be moved to `in-progress` before starting work, so the board reflects the current progress state. Worktrees are optional unless the board policy requires them.
 - `review`: implementation review. Return to `in-progress` for revisions, or move to `done` when approved.
 - The two human gates are **plan approval** (in `planning`) and **`review -> done`**. Everything between can run hands-off. Before moving to `done`, all four evidence checks (lint, test, build, behavior) must be recorded as passing via `@kanban /evidence`. When `requireDoneChecklistForDone` is on, the task body must also contain a `## Definition of Done` section with all items checked; items tagged `(human)` require a human actor.
-- `/loop [lane]` is a **lane-flow prompt driver**: it emits the stage-driver prompt for the selected lane into chat and copies it to clipboard. Default lane is `backlog`. Lane-to-prompt mapping: `backlog` -> `stage-backlog-to-planning`, `planning`/`in-progress` -> `stage-planning-to-review`, `review` -> `stage-review-to-done`. The agent driven by that prompt performs the actual work and board moves; gates are enforced when the agent moves a task via the board UI. `/prompts` is the general manual prompt picker.
+- `/loop [lane]` is a **lane-flow prompt driver**: it emits the stage-driver prompt for the selected lane into chat. Click the **"Send prompt to chat"** button in the response to inject it directly into the chat input (clipboard copy as fallback). Default lane is `backlog`. Lane-to-prompt mapping: `backlog` -> `stage-backlog-to-planning`, `planning`/`in-progress` -> `stage-planning-to-review`, `review` -> `stage-review-to-done`. The agent driven by that prompt performs the actual work and board moves; gates are enforced when the agent moves a task via the board UI. `/prompts` is the general manual prompt picker.
 - Real blockers → keep the task in its lane. Use the task's `dependsOn` frontmatter array or `blocked-by:<slug>` labels to document task dependencies, and the `blocked` label for external blockers. The board webview and backend sync these fields bidirectionally. Record what clears the blocker and never force past a real blocker.
 - One active implementation task at a time (WIP) unless the board allows otherwise.
 

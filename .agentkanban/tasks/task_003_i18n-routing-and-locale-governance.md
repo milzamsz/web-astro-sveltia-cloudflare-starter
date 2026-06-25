@@ -1,5 +1,6 @@
 ---
 title: I18n Routing And Locale Governance
+slug: i18n-routing-and-locale-governance
 lane: done
 created: 2026-06-24T10:00:00+07:00
 updated: 2026-06-24T06:28:49.331Z

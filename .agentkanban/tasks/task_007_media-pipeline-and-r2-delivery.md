@@ -1,5 +1,6 @@
 ---
 title: Media Pipeline And R2 Delivery
+slug: media-pipeline-and-r2-delivery
 lane: done
 created: 2026-06-24T10:00:00+07:00
 updated: 2026-06-24T19:00:00+07:00

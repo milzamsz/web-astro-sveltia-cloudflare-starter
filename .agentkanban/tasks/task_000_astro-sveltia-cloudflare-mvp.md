@@ -1,5 +1,6 @@
 ---
 title: Astro Sveltia Cloudflare MVP
+slug: astro-sveltia-cloudflare-mvp
 lane: backlog
 created: 2026-06-24T10:00:00+07:00
 updated: 2026-06-24T06:30:59.244Z

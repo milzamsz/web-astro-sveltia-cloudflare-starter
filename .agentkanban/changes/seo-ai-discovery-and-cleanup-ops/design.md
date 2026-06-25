@@ -58,3 +58,15 @@ Build scripts derive metadata from published content; manifests enumerate refere
 - SEO helpers and build scripts.
 - `public/llms.txt` generation flow.
 - cleanup worker and reporting scripts.
+
+## Production Readiness
+
+| Category | Coverage |
+|---|---|
+| **Org-scoping** | Discovery outputs generated from content scoped to production branch only. Cleanup worker scoped to production R2 bucket. Manifest generation runs only against published content. |
+| **Audit events** | Cleanup reports stored in R2 `reports/` prefix with timestamp, mode, objects reviewed, objects quarantined/deleted, bytes affected. Manifest regeneration events logged. |
+| **Secret references** | Cleanup worker uses R2 binding (`R2_MEDIA`) — credentials never in code. `CLEANUP_MODE` env var controls behavior. |
+| **Signed commands** | Cleanup triggered via cron (wrangler.jsonc) — no manual invocation. `CLEANUP_MODE` env var enforces mode. Grace period enforced server-side. |
+| **Quotas** | R2 listing pagination (1000 objects/request). Cleanup processes max 100 objects/batch. Report size capped at 1MB. |
+| **Migration idempotency** | No D1 schema changes. Build scripts regenerate manifest/artifacts idempotently. `CLEANUP_MODE=dry-run` ensures first deploy is safe. |
+| **Runbooks** | Cleanup operation documented in admin manual. Restore procedure: `wrangler r2 object copy quarantine/prefix/object live/prefix/object`. Grace period override: `CLEANUP_GRACE_DAYS=0`. |

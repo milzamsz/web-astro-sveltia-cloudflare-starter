@@ -17,17 +17,30 @@
 - Public Git-backed content, preview publishing, and CMS auth remain blocked until repository bootstrap, content modeling, and auth contracts exist.
 - Working behavior to preserve now includes the Astro static shell, i18n routing, SEO helper baseline, and `validate:i18n` command.
 
-## Active Tasks Status (2026-06-24)
+## Active Tasks Status (2026-06-25)
 
+- **task_005 (Blog/Docs/Search)** — `done` ✅ (multilingual blog, Starlight docs, Pagefind search)
 - **task_006 (CMS Content Modeling)** — `done` ✅ (Sveltia config, collections, validation, editor docs)
-- **task_007 (Media Pipeline & R2 Delivery)** — `review` (R2 bindings, image presets, `<Img>`, OG metadata)
-- **task_008 (Auth Admin Access & 2FA)** — `review` (D1 schema, auth endpoints, middleware, admin docs; 2FA enrollment outstanding)
+- **task_007 (Media Pipeline & R2 Delivery)** — `done` ✅ (R2 bindings, image presets, `<Img>`, OG metadata)
+- **task_008 (Auth Admin Access & 2FA)** — `done` ✅ (D1 schema, auth endpoints, middleware, login, bootstrap, 2FA, admin docs)
+- **task_009 (Preview/Publish)** — `planning` (preview middleware, publish/discard endpoints, build status, audit)
+- **task_010 (Contact/Maps)** — `planning` (contact form, Turnstile, D1 storage, Resend, analytics adapter)
+- **task_011 (SEO/Cleanup)** — `planning` (discovery hardening, llms.txt, media manifest, cleanup worker, restore)
+
+**Now active:**
+- 009, 010, 011 → `planning` lane (all deps cleared, ready for implementation)
 
 **Still blocked:**
-- 009 (Preview/Publish): blocked by 007 + 008
-- 010 (Contact/Maps): blocked by 008
-- 011 (SEO/Cleanup): one of two deps (006) done, still needs 007
 - 012 (Security/Release): blocked by 009 + 010 + 011
+
+## Key Decisions
+
+- English is default locale; Indonesian is secondary (`/id/`)
+- Self-hosted GitHub OAuth on Cloudflare Pages Functions (no Vercel)
+- All secrets via Cloudflare Pages encrypted env vars (not in code)
+- D1 database: `astro-sveltia-db` (`66700885-b5cd-48da-bd42-155eb3578b32`)
+- Sveltia CMS 0.167.3 loaded from CDN via dynamic import
+- Cleanup worker defaults to dry-run mode on first deploy
 
 ## task_007 Implementation (2026-06-24) — REVIEW
 

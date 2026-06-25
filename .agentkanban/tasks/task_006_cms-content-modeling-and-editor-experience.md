@@ -1,5 +1,6 @@
 ---
 title: CMS Content Modeling And Editor Experience
+slug: cms-content-modeling-and-editor-experience
 lane: done
 created: 2026-06-24T10:00:00+07:00
 updated: 2026-06-24T16:00:00+07:00

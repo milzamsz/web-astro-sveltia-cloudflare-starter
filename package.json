@@ -23,7 +23,7 @@
     "format:check": "prettier --check 'src/**/*.{astro,ts,tsx,css}'",
     "validate:i18n": "node scripts/validate-i18n.js",
     "validate:cms": "node scripts/validate-cms-config.cjs",
-    "postbuild": "pagefind --site dist"
+    "postbuild": "pagefind --site dist && node scripts/generate-media-manifest.cjs && node scripts/generate-llms-txt.cjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.18",
