@@ -41,8 +41,6 @@
 - All secrets via Cloudflare Pages encrypted env vars (not in code)
 - D1 database: `astro-sveltia-db` (`66700885-b5cd-48da-bd42-155eb3578b32`)
 - Sveltia CMS 0.167.3 loaded from CDN via dynamic import
-- Cleanup worker defaults to dry-run mode on first deploy
-
 ## task_007 Implementation (2026-06-24) — REVIEW
 
 **Delivered:**

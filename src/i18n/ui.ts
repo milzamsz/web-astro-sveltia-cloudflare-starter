@@ -25,7 +25,7 @@ export const translations: Record<Locale, TranslationDict> = {
     "notfound.title": "Halaman Tidak Ditemukan",
     "notfound.desc": "Halaman yang Anda cari tidak ditemukan.",
     "notfound.back": "Kembali ke Beranda",
-    "locale.switch": "English",
+    "locale.switch": "EN",
   },
   en: {
     "nav.home": "Home",
@@ -45,7 +45,7 @@ export const translations: Record<Locale, TranslationDict> = {
     "notfound.title": "Page Not Found",
     "notfound.desc": "The page you are looking for could not be found.",
     "notfound.back": "Back to Home",
-    "locale.switch": "Indonesia",
+    "locale.switch": "ID",
   },
 };
 
