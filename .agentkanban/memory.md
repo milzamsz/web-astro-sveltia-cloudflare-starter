@@ -28,10 +28,11 @@
 - **task_011 (SEO/Cleanup)** — `planning` (discovery hardening, llms.txt, media manifest, cleanup worker, restore)
 
 **Now active:**
-- 009, 010, 011 → `planning` lane (all deps cleared, ready for implementation)
+- 009, 010, 011 → `review` lane (awaiting human review → done)
+- 012 (Security/Release) → ready for planning (all deps now done)
 
 **Still blocked:**
-- 012 (Security/Release): blocked by 009 + 010 + 011
+- None
 
 ## Key Decisions
 

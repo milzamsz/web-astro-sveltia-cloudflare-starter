@@ -1,0 +1,44 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Hero from "../../components/Hero.astro";
+import FeatureGrid from "../../components/FeatureGrid.astro";
+import { t } from "../../i18n/ui";
+
+export function getStaticPaths() {
+  return [
+    { params: { locale: "id" } },
+    { params: { locale: "en" } },
+  ];
+}
+
+const locale = (Astro.currentLocale || "id") as "id" | "en";
+const isId = locale === "id";
+---
+
+<BaseLayout
+  title={t(locale, "nav.home")}
+  description={isId
+    ? "Boilerplate multilingual untuk website marketing."
+    : "Multilingual boilerplate for marketing websites."}
+  locale={locale}
+  path={`/${locale}`}
+>
+  <Hero
+    title={t(locale, "hero.title")}
+    content={t(locale, "hero.subtitle")}
+    ctaText={t(locale, "hero.cta")}
+    ctaHref="/services"
+    locale={locale}
+  />
+
+  <FeatureGrid
+    title={isId ? "Mengapa Memilih Kami" : "Why Choose Us"}
+    features={[
+      { title: isId ? "Developer Experience" : "Developer Experience", description: isId ? "Tooling modern, type-safe, dan delightful untuk developer." : "Modern tooling, type-safe, and delightful for developers.", icon: "code" },
+      { title: isId ? "Performance First" : "Performance First", description: isId ? "Static-first, edge-ready, Core Web Vitals optimal out of the box." : "Static-first, edge-ready, optimal Core Web Vitals out of the box.", icon: "speed" },
+      { title: isId ? "Multilingual Native" : "Multilingual Native", description: isId ? "i18n routing, localized content, SEO-ready untuk pasar global." : "i18n routing, localized content, SEO-ready for global markets.", icon: "globe" },
+      { title: isId ? "CMS Ready" : "CMS Ready", description: isId ? "Konten terstruktur siap diintegrasikan dengan headless CMS pilihan Anda." : "Structured content ready to integrate with your headless CMS of choice.", icon: "database" },
+    ]}
+  />
+
+</BaseLayout>

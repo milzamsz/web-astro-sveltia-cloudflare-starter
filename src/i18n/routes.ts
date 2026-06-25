@@ -3,10 +3,10 @@ import { SITE_CONFIG } from "../lib/site-config";
 
 /**
  * Get the URL prefix for a given locale.
- * Default locale has no prefix; other locales get `/{locale}`.
+ * With prefixDefaultLocale: true, all locales get a prefix.
  */
 export function localePrefix(locale: Locale): string {
-  return locale === SITE_CONFIG.defaultLocale ? "" : `/${locale}`;
+  return `/${locale}`;
 }
 
 /**
