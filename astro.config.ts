@@ -23,24 +23,24 @@ export default defineConfig({
         {
           label: "Getting Started",
           items: [
-            { label: "Overview", slug: "getting-started/overview" },
-            { label: "Quick Start", slug: "getting-started/quick-start" },
-            { label: "Project Structure", slug: "getting-started/project-structure" },
+            { label: "Overview", slug: "docs/getting-started/overview" },
+            { label: "Quick Start", slug: "docs/getting-started/quick-start" },
+            { label: "Project Structure", slug: "docs/getting-started/project-structure" },
           ],
         },
         {
           label: "Guides",
           items: [
-            { label: "Content Management", slug: "guides/content-management" },
-            { label: "Internationalization", slug: "guides/internationalization" },
-            { label: "Customization", slug: "guides/customization" },
+            { label: "Content Management", slug: "docs/guides/content-management" },
+            { label: "Internationalization", slug: "docs/guides/internationalization" },
+            { label: "Customization", slug: "docs/guides/customization" },
           ],
         },
         {
           label: "Deployment",
           items: [
-            { label: "Cloudflare Pages", slug: "deployment/cloudflare-pages" },
-            { label: "Environment Variables", slug: "deployment/environment-variables" },
+            { label: "Cloudflare Pages", slug: "docs/deployment/cloudflare-pages" },
+            { label: "Environment Variables", slug: "docs/deployment/environment-variables" },
           ],
         },
       ],
