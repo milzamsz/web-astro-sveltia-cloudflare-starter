@@ -15,7 +15,7 @@ build/
 .cache
 
 # Dependencies
-pnpm-lock.yaml
+# pnpm-lock.yaml is intentionally committed for reproducible CI builds
 
 # Logs and reports
 logs/

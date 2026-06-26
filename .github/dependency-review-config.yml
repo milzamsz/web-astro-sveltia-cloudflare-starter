@@ -22,7 +22,7 @@ deny-licenses:
   - AGPL-3.0
   - GPL-3.0
   - LGPL-3.0
-  - SSPl-1.0
+  - SSPL-1.0
 
 # Allow scopes for exceptions (use sparingly)
 # allow-scopes:
