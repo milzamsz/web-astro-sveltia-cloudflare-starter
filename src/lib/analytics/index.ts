@@ -54,14 +54,14 @@ export function trackEvent(event: AnalyticsEvent): void {
   if (typeof window === "undefined") return;
 
   try {
-    if ((window as any).dataLayer) {
-      (window as any).dataLayer.push({
+    if (window.dataLayer) {
+      window.dataLayer.push({
         event: event.name,
         ...event.data,
       });
     }
-    if ((window as any).umami) {
-      (window as any).umami.track(event.name, event.data);
+    if (window.umami) {
+      window.umami.track(event.name, event.data);
     }
   } catch {
     // Analytics failure should never break the page

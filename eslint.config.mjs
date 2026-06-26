@@ -4,7 +4,7 @@ import tseslint from "typescript-eslint";
 import prettier from "eslint-config-prettier";
 
 export default [
-  { ignores: ["dist/", ".astro/", "functions/", "scripts/", "**/*.d.ts", "**/*.cjs"] },
+  { ignores: ["dist/", ".astro/", ".wrangler/", "functions/", "scripts/", "**/*.d.ts", "**/*.cjs"] },
 
   js.configs.recommended,
   ...tseslint.configs.recommended,

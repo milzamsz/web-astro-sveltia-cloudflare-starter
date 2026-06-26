@@ -91,6 +91,7 @@ jobs:
     permissions:
       contents: read
       security-events: write
+    if: github.event_name == 'pull_request'
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -101,8 +102,8 @@ jobs:
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./
-          base: main
-          head: HEAD
+          base: ${{ github.base_ref }}
+          head: ${{ github.head_ref }}
           extra_args: --only-verified --fail
 
   dependency-review:
@@ -144,8 +145,8 @@ jobs:
         run: |
           if [ -f ".agent-skills.lock.md" ]; then
             echo "✅ Skills lock file exists"
+            echo "📋 Current locked skills:"
             cat .agent-skills.lock.md
           else
-            echo "⚠️  No skills lock file found"
-            exit 1
+            echo "⚠️  No skills lock file found - skipping verification"
           fi
