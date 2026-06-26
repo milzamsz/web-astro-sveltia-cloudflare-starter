@@ -16,7 +16,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "lint": "pnpm run lint:js && pnpm run lint:css && pnpm run type-check && pnpm run validate:i18n && pnpm run validate:secrets",
-    "lint:js": "eslint --ext .js,.jsx,.ts,.tsx src/",
+    "lint:js": "eslint . --ignore-pattern dist --ignore-pattern .astro --ignore-pattern node_modules",
     "lint:css": "stylelint src/styles/",
     "type-check": "astro check",
     "format": "prettier --write 'src/**/*.{astro,ts,tsx,css}'",
@@ -37,9 +37,11 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
     "@astrojs/starlight": "^0.41.0",
+    "@eslint/js": "^10.0.1",
     "@types/node": "^20.0.0",
     "@typescript-eslint/eslint-plugin": "^8.62.0",
     "@typescript-eslint/parser": "^8.62.0",
+    "astro-eslint-parser": "^2.1.0",
     "eslint": "^10.5.0",
     "eslint-config-prettier": "^10.1.8",
     "pagefind": "^1.5.2",
@@ -48,6 +50,7 @@
     "stylelint": "^17.14.0",
     "stylelint-config-recommended-scss": "^17.0.1",
     "stylelint-config-standard": "^40.0.0",
-    "typescript": "^5.4.3"
+    "typescript": "^5.4.3",
+    "typescript-eslint": "^8.62.0"
   }
 }
