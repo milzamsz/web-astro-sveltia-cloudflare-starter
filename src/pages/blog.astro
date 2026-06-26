@@ -1,0 +1,48 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import { t } from "../i18n/ui";
+
+const locale = (Astro.currentLocale || "en") as "id" | "en";
+
+const allPosts: CollectionEntry<"blog">[] = await getCollection("blog");
+const posts = allPosts
+  .filter((p) => p.data.locale === locale && !p.data.draft)
+  .sort((a, b) => new Date(b.data.publishDate).getTime() - new Date(a.data.publishDate).getTime());
+---
+
+<BaseLayout title={t(locale, "nav.blog")} description={t(locale, "nav.blog")} locale={locale}>
+  <main class="container py-12">
+    <h1 class="text-4xl font-bold mb-8">{t(locale, "nav.blog")}</h1>
+
+    {posts.length === 0 && (
+      <p class="text-muted-foreground">No blog posts yet.</p>
+    )}
+
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {posts.map((post) => (
+        <article class="rounded-lg border p-6 shadow-sm">
+          <time class="text-sm text-muted-foreground">
+            {new Date(post.data.publishDate).toLocaleDateString(locale === "id" ? "id-ID" : "en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          </time>
+          <h2 class="mt-2 text-xl font-semibold">
+            <a href={`/blog/${post.id}`} class="hover:underline">{post.data.title}</a>
+          </h2>
+          <p class="mt-2 text-muted-foreground">{post.data.description}</p>
+          {post.data.tags && post.data.tags.length > 0 && (
+            <div class="mt-3 flex flex-wrap gap-2">
+              {post.data.tags.map((tag) => (
+                <span class="rounded-full bg-muted px-3 py-1 text-xs">{tag}</span>
+              ))}
+            </div>
+          )}
+        </article>
+      ))}
+    </div>
+  </main>
+</BaseLayout>

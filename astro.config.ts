@@ -8,7 +8,7 @@ export default defineConfig({
   i18n: {
     defaultLocale: "en",
     locales: ["en", "id"],
-    prefixDefaultLocale: true,
+    prefixDefaultLocale: false,
   },
   integrations: [
     starlight({

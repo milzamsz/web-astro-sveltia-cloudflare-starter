@@ -1,0 +1,57 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import { t } from "../../i18n/ui";
+import { resolveRoute } from "../../i18n/routes";
+
+export async function getStaticPaths() {
+  const allPosts: CollectionEntry<"blog">[] = await getCollection("blog");
+  return allPosts
+    .filter((p) => p.data.locale === "en" && !p.data.draft)
+    .map((post) => ({
+      params: { slug: post.id },
+      props: { post },
+    }));
+}
+
+const { post } = Astro.props as {
+  post: CollectionEntry<"blog">;
+};
+
+const locale = "en";
+const title = post.data.title;
+const description = post.data.description;
+const publishDate = new Date(post.data.publishDate);
+const tags = post.data.tags || [];
+---
+
+<BaseLayout title={title} description={description} locale={locale} path={`/blog/${post.id}`}>
+  <article class="container py-12 max-w-3xl">
+    <header class="mb-8">
+      <time class="text-sm text-muted-foreground">
+        {publishDate.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+      </time>
+      <h1 class="mt-1 text-4xl font-bold tracking-tight">{title}</h1>
+      {tags.length > 0 && (
+        <div class="mt-4 flex flex-wrap gap-2">
+          {tags.map((tag: string) => (
+            <span class="rounded-full bg-muted px-3 py-1 text-xs">{tag}</span>
+          ))}
+        </div>
+      )}
+      <p class="mt-2 text-muted-foreground">By {post.data.author}</p>
+    </header>
+
+    <div class="prose prose-gray dark:prose-invert max-w-none">
+      <slot />
+    </div>
+
+    <hr class="my-8" />
+    <nav class="flex justify-between">
+      <a href={resolveRoute(locale, "/blog")} class="text-sm font-medium">
+        &larr; {t(locale, "nav.blog")}
+      </a>
+    </nav>
+  </article>
+</BaseLayout>

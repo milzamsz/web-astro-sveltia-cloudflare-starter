@@ -12,7 +12,7 @@ export interface SeoMeta {
 
 /**
  * Generate the canonical URL for a given locale and path.
- * Handles Astro i18n prefix routing (prefixDefaultLocale: true).
+ * Handles Astro i18n prefix routing (prefixDefaultLocale: false).
  */
 export function canonicalUrl(locale: Locale, path: string): string {
   const prefix = localePrefix(locale);

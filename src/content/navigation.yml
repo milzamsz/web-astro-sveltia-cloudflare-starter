@@ -5,43 +5,43 @@ header:
     url: "/"
     locale: id
   - label: "Home"
-    url: "/en/"
+    url: "/"
     locale: en
   - label: "Tentang"
     url: "/tentang"
     locale: id
   - label: "About"
-    url: "/en/about"
+    url: "/about"
     locale: en
   - label: "Layanan"
     url: "/layanan"
     locale: id
   - label: "Services"
-    url: "/en/services"
+    url: "/services"
     locale: en
   - label: "Harga"
     url: "/harga"
     locale: id
   - label: "Pricing"
-    url: "/en/pricing"
+    url: "/pricing"
     locale: en
   - label: "Blog"
     url: "/blog"
     locale: id
   - label: "Blog"
-    url: "/en/blog"
+    url: "/blog"
     locale: en
   - label: "Kontak"
     url: "/kontak"
     locale: id
   - label: "Contact"
-    url: "/en/contact"
+    url: "/contact"
     locale: en
   - label: "Dokumentasi"
     url: "/docs"
     locale: id
   - label: "Documentation"
-    url: "/en/docs"
+    url: "/docs"
     locale: en
 
 footer:

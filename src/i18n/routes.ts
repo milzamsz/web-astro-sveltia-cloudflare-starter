@@ -6,12 +6,15 @@ import { SITE_CONFIG } from "../lib/site-config";
  * With prefixDefaultLocale: true, all locales get a prefix.
  */
 export function localePrefix(locale: Locale): string {
+  // When prefixDefaultLocale is false, the default locale has no prefix
+  if (locale === SITE_CONFIG.defaultLocale) return "";
   return `/${locale}`;
 }
 
 /**
  * Resolve a full localized route path.
- * Example: resolveRoute("en", "/services") → "/en/services"
+ * Example: resolveRoute("en", "/services") → "/services"
+ *          resolveRoute("id", "/services") → "/id/services"
  */
 export function resolveRoute(locale: Locale, path: string): string {
   const prefix = localePrefix(locale);
