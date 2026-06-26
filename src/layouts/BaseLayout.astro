@@ -13,14 +13,14 @@ export interface Props {
 }
 
 // For i18n routing, prefer path from Astro.currentRoute
-const { currentLocale } = Astro.props as { currentLocale: Locale };
+const { currentLocale, ...restProps } = Astro.props as Props & { currentLocale?: Locale };
 
 const {
   title,
   description = SITE_CONFIG.description,
   locale = currentLocale || SITE_CONFIG.defaultLocale,
   path = "/",
-} = Astro.props;
+} = restProps;
 
 const canonical = canonicalUrl(locale, path);
 const links = hreflangLinks(path);
