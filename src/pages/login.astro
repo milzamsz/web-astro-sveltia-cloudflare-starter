@@ -94,11 +94,9 @@ const turnstileSiteKey = TURNSTILE_SITE_KEY || "1x00000000000000000000AA";
 
     let turnstileToken = "";
 
-    (window as any).onTurnstileLogin = (token: string) => {
-      turnstileToken = token;
-    };
-
-    // Load the Turnstile script and render the widget.
+    // Load the Turnstile script and render the widget. For explicit render the
+    // callbacks must be functions (string names only work with implicit
+    // data-callback rendering), so we close over `turnstileToken` directly.
     const turnstileScript = document.createElement("script");
     turnstileScript.src =
       "https://challenges.cloudflare.com/turnstile/v0/api.js";
@@ -108,8 +106,13 @@ const turnstileSiteKey = TURNSTILE_SITE_KEY || "1x00000000000000000000AA";
       if (turnstileContainer && (window as any).turnstile && siteKey) {
         (window as any).turnstile.render(turnstileContainer, {
           sitekey: siteKey,
-          callback: "onTurnstileLogin",
+          callback: (token: string) => {
+            turnstileToken = token;
+          },
           "expired-callback": () => {
+            turnstileToken = "";
+          },
+          "error-callback": () => {
             turnstileToken = "";
           },
           theme: "auto",
