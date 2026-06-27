@@ -3,7 +3,7 @@ translationKey: about
 locale: en
 slug: about
 title: About Us
-description: Meet the team and vision behind the modern multilingual marketing website boilerplate.
+description: Meet the team and vision behind the modern multilingual marketing website boilerplate
 sections:
   - type: hero
     title: About Us!
