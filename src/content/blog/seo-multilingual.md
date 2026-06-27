@@ -16,8 +16,6 @@ author: Admin
 
 Search engines need clear signals about language and regional targeting. A well-structured multilingual site can rank in multiple countries simultaneously.
 
-![](https://pub-2bbf1e2fef824357830a7d4c045dca9a.r2.dev/uploads/github-term.png)
-
 ## Hreflang Tags
 
 Hreflang tells Google which language version of a page to show:
