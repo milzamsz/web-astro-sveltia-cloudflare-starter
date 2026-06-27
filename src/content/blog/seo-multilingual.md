@@ -1,20 +1,22 @@
 ---
-title: "Optimizing SEO for Multilingual Websites"
-description: "Technical SEO best practices for sites with multiple languages."
-locale: "en"
+translationKey: seo-guide
+locale: en
+title: Optimizing SEO for Multilingual Websites
+description: Technical SEO best practices for sites with multiple languages.
 publishDate: 2026-06-22
 draft: false
 tags:
   - seo
   - i18n
   - performance
-author: "Admin"
-translationKey: "seo-guide"
+author: Admin
 ---
 
 ## Why SEO Matters for Multilingual Sites
 
 Search engines need clear signals about language and regional targeting. A well-structured multilingual site can rank in multiple countries simultaneously.
+
+![](https://pub-2bbf1e2fef824357830a7d4c045dca9a.r2.dev/uploads/github-term.png)
 
 ## Hreflang Tags
 
