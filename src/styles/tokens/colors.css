@@ -35,7 +35,8 @@
 
   /* === Muted === */
   --muted: oklch(0.97 0 0deg);
-  --muted-foreground: oklch(0.556 0 0deg);
+  /* 0.50 keeps secondary text >= WCAG AA (>=4.5:1) on both white and muted bg */
+  --muted-foreground: oklch(0.5 0 0deg);
 
   /* === Border & Ring === */
   --border: oklch(0.922 0 0deg);
@@ -86,7 +87,8 @@
 
   /* === Muted === */
   --muted: oklch(0.269 0 0deg);
-  --muted-foreground: oklch(0.708 0 0deg);
+  /* 0.74 keeps secondary text >= WCAG AA (>=4.5:1) on dark muted bg */
+  --muted-foreground: oklch(0.74 0 0deg);
 
   /* === Border & Ring === */
   --border: oklch(0.32 0 0deg);
