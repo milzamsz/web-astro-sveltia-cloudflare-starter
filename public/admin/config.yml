@@ -7,32 +7,47 @@
 # - SVELTIA_BACKEND_BRANCH: main (production) or content-preview (drafts)
 # - SVELTIA_BASE_URL: auth callback URL
 
+# Commits go straight to `main` so every save triggers the Cloudflare Pages
+# production build → the live site updates automatically (no manual merge step).
 backend:
   name: github
   repo: milzamsz/web-astro-sveltia-cloudflare-starter
-  branch: content-preview
+  branch: main
   base_url: https://web-astro-sveltia-cloudflare-starter.pages.dev
   auth_endpoint: auth
 
-# Media: R2-backed uploads via environment-specific bucket bindings.
-# - R2_BUCKET_NAME: set via Cloudflare Pages secrets (astro-sveltia-media)
-# - R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY: R2 S3-compatible credentials
-# - R2_ENDPOINT: R2 S3 endpoint per environment
-# - SVELTIA_MEDIA_BASE_URL: custom asset domain (e.g. https://assets.example.com)
-media_folder: ""                                              # No Git-backed media
-public_folder: ""
-media_library:
-  name: default
-  config:
-    max_file_size: 10485760                                   # 10 MB
-    folder: uploads/{year}/{month}/{slug}
-    public_path: "{{SVELTIA_MEDIA_URL}}/{{media_url}}"
-    r2:
-      bucket: "{{R2_BUCKET_NAME}}"
-      access_key_id: "{{R2_ACCESS_KEY_ID}}"
-      secret_access_key: "{{R2_SECRET_ACCESS_KEY}}"
-      endpoint: "{{R2_ENDPOINT}}"
-      region: auto
+# ─── Media: Cloudflare R2 (direct browser → R2 via the S3 API + AWS SigV4) ───
+# Sveltia uploads straight to R2 from the editor's browser; no Pages Function
+# proxy is involved. The three values below are NON-secret and safe to commit.
+# The R2 *Secret* Access Key is NEVER stored here — editors paste it once in the
+# CMS UI (File/Image field) and it stays in their browser's local storage.
+#
+# Fill these in:
+#   account_id    → Cloudflare dashboard, right sidebar "Account ID"
+#   access_key_id → R2 → Manage R2 API Tokens → create a token with
+#                   "Object Read & Write", scoped to the `astro-sveltia-media`
+#                   bucket; copy its Access Key ID (64 hex chars).
+#   public_url    → R2 → astro-sveltia-media → Settings → enable the public
+#                   "r2.dev" URL (https://pub-xxxx.r2.dev) OR attach a custom
+#                   domain (e.g. https://assets.example.com). REQUIRED — the R2
+#                   S3 endpoint always needs auth, so previews use this URL.
+#
+# One-time dashboard step: R2 → bucket → Settings → CORS policy must allow your
+# site origin (https://web-astro-sveltia-cloudflare-starter.pages.dev) for
+# GET/PUT/HEAD with the AWS SigV4 headers. See docs.
+# Docs: https://sveltiacms.app/en/docs/media/cloudflare-r2
+media_libraries:
+  cloudflare_r2:
+    bucket: astro-sveltia-media
+    account_id: REPLACE_WITH_CLOUDFLARE_ACCOUNT_ID
+    access_key_id: REPLACE_WITH_R2_ACCESS_KEY_ID
+    public_url: https://REPLACE_WITH_PUBLIC_BUCKET_URL.r2.dev
+    prefix: uploads/
+
+# Git-backed fallback: used only if R2 isn't configured yet or an editor picks
+# "internal" storage. Keeps the CMS usable before R2 credentials are filled in.
+media_folder: public/uploads
+public_folder: /uploads
 
 # Locale-aware slug configuration — matches the _en.md suffix convention for
 # English variants and plain .md for Indonesian (default locale).
