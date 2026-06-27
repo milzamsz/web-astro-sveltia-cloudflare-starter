@@ -17,7 +17,7 @@ export interface Props {
 const {
   currentLocale,
   currentPath = "/",
-  showThemeToggle = false,
+  showThemeToggle = true,
 } = Astro.props as Props;
 const detectedLocale = detectLocale(currentPath);
 const effectiveLocale = detectedLocale || currentLocale;

@@ -51,8 +51,13 @@ const labelLight = t(locale, "nav.lightMode");
     }
   };
 
+  // Keep the main site and the Starlight /docs section in sync by mirroring the
+  // choice into both storage keys.
+  const starlightKey = "starlight-theme";
+
   try {
-    const storedTheme = localStorage.getItem(storageKey);
+    const storedTheme =
+      localStorage.getItem(storageKey) || localStorage.getItem(starlightKey);
     const preferredTheme = window.matchMedia("(prefers-color-scheme: dark)")
       .matches
       ? "dark"
@@ -66,6 +71,7 @@ const labelLight = t(locale, "nav.lightMode");
     button?.addEventListener("click", () => {
       const nextTheme = root.classList.contains("dark") ? "light" : "dark";
       localStorage.setItem(storageKey, nextTheme);
+      localStorage.setItem(starlightKey, nextTheme);
       syncTheme(nextTheme);
     });
   } catch {
