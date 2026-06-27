@@ -31,10 +31,7 @@ const { locale = "en" } = Astro.props as Props;
 
     {
       isProd ? (
-        <>
-          <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
-          <div class="search-modal__ui" data-pagefind-ui />
-        </>
+        <div class="search-modal__ui" data-pagefind-ui />
       ) : (
         <p class="search-modal__fallback">{t(locale, "search.devFallback")}</p>
       )
@@ -42,20 +39,44 @@ const { locale = "en" } = Astro.props as Props;
   </div>
 </dialog>
 
-{isProd && <script src="/pagefind/pagefind-ui.js" defer />}
-
 <script is:inline>
   const dialog = document.getElementById("search-modal");
   const triggers = document.querySelectorAll("[data-search-trigger]");
   const closeButton = dialog?.querySelector("[data-search-close]");
+  // The mount point only exists in production builds (Pagefind index).
+  const pagefindMount = dialog?.querySelector("[data-pagefind-ui]");
   let pagefindInitialized = false;
+  let pagefindLoading = null;
 
-  const openSearch = () => {
+  // Load the Pagefind UI bundle + styles on demand, the first time search is
+  // opened, so they never weigh on initial page load (TBT / unused JS).
+  const loadPagefind = () => {
+    if (pagefindLoading) return pagefindLoading;
+    pagefindLoading = new Promise((resolve) => {
+      const css = document.createElement("link");
+      css.rel = "stylesheet";
+      css.href = "/pagefind/pagefind-ui.css";
+      document.head.appendChild(css);
+
+      const script = document.createElement("script");
+      script.src = "/pagefind/pagefind-ui.js";
+      script.onload = () => resolve();
+      script.onerror = () => resolve();
+      document.head.appendChild(script);
+    });
+    return pagefindLoading;
+  };
+
+  const openSearch = async () => {
     if (!dialog || typeof dialog.showModal !== "function") {
       return;
     }
 
     dialog.showModal();
+
+    if (!pagefindMount) return;
+
+    await loadPagefind();
 
     if (window.PagefindUI && !pagefindInitialized) {
       pagefindInitialized = true;
