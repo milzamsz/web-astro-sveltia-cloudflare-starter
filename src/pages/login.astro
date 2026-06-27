@@ -1,5 +1,11 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { TURNSTILE_SITE_KEY } from "astro:env/server";
+
+// Turnstile site keys are public by design, so it's safe to bake this into the
+// page at build time. Falls back to Cloudflare's "always passes" TEST key when
+// no real key is configured (local dev / unconfigured deploy).
+const turnstileSiteKey = TURNSTILE_SITE_KEY || "1x00000000000000000000AA";
 ---
 
 <BaseLayout
@@ -50,6 +56,13 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         />
       </div>
 
+      <div
+        id="turnstile-container"
+        data-sitekey={turnstileSiteKey}
+        style="display: flex; justify-content: center;"
+      >
+      </div>
+
       <button
         type="submit"
         style="padding: 0.75rem; background: var(--primary, #171717); color: var(--primary-foreground, #fff); border: none; border-radius: 6px; cursor: pointer; font-size: 1rem;"
@@ -74,11 +87,48 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     const form = document.getElementById("login-form") as HTMLFormElement;
     const errorEl = document.getElementById("error-message") as HTMLElement;
     const successEl = document.getElementById("success-message") as HTMLElement;
+    const turnstileContainer = document.getElementById(
+      "turnstile-container",
+    ) as HTMLElement | null;
+    const siteKey = turnstileContainer?.dataset.sitekey || "";
+
+    let turnstileToken = "";
+
+    (window as any).onTurnstileLogin = (token: string) => {
+      turnstileToken = token;
+    };
+
+    // Load the Turnstile script and render the widget.
+    const turnstileScript = document.createElement("script");
+    turnstileScript.src =
+      "https://challenges.cloudflare.com/turnstile/v0/api.js";
+    turnstileScript.async = true;
+    turnstileScript.defer = true;
+    turnstileScript.onload = () => {
+      if (turnstileContainer && (window as any).turnstile && siteKey) {
+        (window as any).turnstile.render(turnstileContainer, {
+          sitekey: siteKey,
+          callback: "onTurnstileLogin",
+          "expired-callback": () => {
+            turnstileToken = "";
+          },
+          theme: "auto",
+          action: "login",
+        });
+      }
+    };
+    document.head.appendChild(turnstileScript);
 
     form?.addEventListener("submit", async (e) => {
       e.preventDefault();
       errorEl.style.display = "none";
       successEl.style.display = "none";
+
+      if (siteKey && !turnstileToken) {
+        errorEl.textContent = "Please complete the verification.";
+        errorEl.style.display = "block";
+        return;
+      }
 
       const email = (document.getElementById("email") as HTMLInputElement)
         .value;
@@ -89,7 +139,11 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         const res = await fetch("/api/auth/sign-in", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({
+            email,
+            password,
+            "cf-turnstile-response": turnstileToken,
+          }),
         });
 
         const data = await res.json();
@@ -97,6 +151,9 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         if (!res.ok) {
           errorEl.textContent = data.error || "Login failed";
           errorEl.style.display = "block";
+          // Turnstile tokens are single-use — reset so the user can retry.
+          turnstileToken = "";
+          (window as any).turnstile?.reset();
           return;
         }
 
@@ -115,6 +172,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       } catch {
         errorEl.textContent = "Network error. Please try again.";
         errorEl.style.display = "block";
+        turnstileToken = "";
+        (window as any).turnstile?.reset();
       }
     });
   </script>

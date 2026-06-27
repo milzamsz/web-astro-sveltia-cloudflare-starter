@@ -8,11 +8,14 @@
  * Response 429: { error: "Too many attempts" }
  */
 
+import { verifyTurnstile } from "../../_shared/turnstile";
+
 export interface Env {
   DB: D1Database;
   RESEND_API_KEY: string;
   SESSION_SECRET: string;
   TOTP_ISSUER?: string;
+  TURNSTILE_SECRET_KEY?: string;
 }
 
 export async function onRequest(context: {
@@ -35,6 +38,7 @@ export async function onRequest(context: {
     const body = await request.json() as {
       email?: string;
       password?: string;
+      "cf-turnstile-response"?: string;
     };
 
     if (!body.email || !body.password) {
@@ -42,6 +46,25 @@ export async function onRequest(context: {
         JSON.stringify({ error: 'Email and password required' }),
         { status: 400, headers }
       );
+    }
+
+    // Bot protection: when a Turnstile secret is configured, a valid token is
+    // mandatory. Skipped only in environments where the secret is unset (dev).
+    if (env.TURNSTILE_SECRET_KEY) {
+      const token = body["cf-turnstile-response"];
+      if (!token) {
+        return new Response(
+          JSON.stringify({ error: 'Please complete the verification.' }),
+          { status: 403, headers }
+        );
+      }
+      const turnstile = await verifyTurnstile(token, env.TURNSTILE_SECRET_KEY);
+      if (!turnstile.success) {
+        return new Response(
+          JSON.stringify({ error: 'Verification failed. Please try again.' }),
+          { status: 403, headers }
+        );
+      }
     }
 
     // Rate limiting check: count attempts in the last 15 min

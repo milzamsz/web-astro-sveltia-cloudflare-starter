@@ -166,6 +166,7 @@ export default defineConfig({
       SITE_URL: envField.string({ context: "server", access: "public", default: "http://localhost:4321" }),
       RESEND_API_KEY: envField.string({ context: "server", access: "secret", optional: true }),
       RESEND_FROM_EMAIL: envField.string({ context: "server", access: "secret", optional: true }),
+      TURNSTILE_SITE_KEY: envField.string({ context: "server", access: "public", optional: true }),
       GOOGLE_SITE_VERIFICATION: envField.string({ context: "server", access: "public", optional: true }),
       BING_SITE_VERIFICATION: envField.string({ context: "server", access: "public", optional: true }),
       PUBLIC_GA_MEASUREMENT_ID: envField.string({ context: "client", access: "public", optional: true }),
