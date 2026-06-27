@@ -24,6 +24,36 @@ export interface Env {
 // Hard-coded allowed roles for admin access
 const ADMIN_ROLES = ['admin', 'publisher', 'reviewer', 'editor'];
 
+// CSP for the Sveltia CMS shell. Set here (not just in _headers) because
+// _headers is not reliably applied to responses served through a Pages Function
+// like this middleware. Sveltia loads its bundle from jsDelivr, Material Symbols
+// from Google Fonts, talks to the GitHub API, and uploads/lists media on the R2
+// S3 endpoint (*.r2.cloudflarestorage.com) — all must be allowed or the editor
+// shows "error while searching assets" / missing icons.
+const CMS_CSP = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' cdn.jsdelivr.net",
+  "style-src 'self' 'unsafe-inline' cdn.jsdelivr.net fonts.googleapis.com",
+  "font-src 'self' data: fonts.gstatic.com cdn.jsdelivr.net",
+  "img-src 'self' data: https:",
+  "connect-src 'self' api.github.com *.githubusercontent.com *.r2.cloudflarestorage.com cdn.jsdelivr.net fonts.googleapis.com fonts.gstatic.com translation.googleapis.com generativelanguage.googleapis.com",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'none'",
+].join('; ');
+
+function withCmsCsp(res: Response): Response {
+  const headers = new Headers(res.headers);
+  headers.set('Content-Security-Policy', CMS_CSP);
+  headers.set('Cross-Origin-Opener-Policy', 'unsafe-none');
+  return new Response(res.body, {
+    status: res.status,
+    statusText: res.statusText,
+    headers,
+  });
+}
+
 export async function onRequest(context: {
   request: Request;
   env: Env;
@@ -122,7 +152,9 @@ export async function onRequest(context: {
       role: session.role,
     };
 
-    return await next();
+    // Serve the authenticated CMS shell with the CMS-specific CSP so Sveltia can
+    // reach jsDelivr, Google Fonts, the GitHub API, and the R2 S3 endpoint.
+    return withCmsCsp(await next());
   } catch (err) {
     console.error('Admin middleware error:', err);
     return new Response('Internal server error', { status: 500 });
