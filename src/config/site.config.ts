@@ -89,8 +89,9 @@ export interface SiteConfig {
 }
 
 export const siteConfig: SiteConfig = {
-  /* Core configuration */
-  url: "https://example.com",
+  /* Core configuration — single source of truth for canonical/OG/sitemap/llms.txt.
+   * Replace with your production domain when forking this template. */
+  url: "https://web-astro-sveltia-cloudflare-starter.pages.dev",
   name: "Astro Sveltia Cloudflare",
   description:
     "Multilingual marketing website boilerplate with Astro, Sveltia CMS, and Cloudflare Pages",

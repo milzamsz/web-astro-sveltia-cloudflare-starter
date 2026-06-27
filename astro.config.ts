@@ -7,6 +7,7 @@ import mdx from "@astrojs/mdx";
 import icon from "astro-icon";
 import { readdir, readFile } from "node:fs/promises";
 import { join, extname, basename } from "node:path";
+import { siteConfig } from "./src/config/site.config";
 
 async function collectFiles(dir: string, extensions: string[]): Promise<string[]> {
   const results: string[] = [];
@@ -102,7 +103,7 @@ function contentValidationIntegration() {
 }
 
 export default defineConfig({
-  site: "https://example.com",
+  site: siteConfig.url,
   i18n: {
     defaultLocale: "en",
     locales: ["en", "id"],
