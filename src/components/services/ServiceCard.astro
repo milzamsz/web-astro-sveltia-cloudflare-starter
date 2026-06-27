@@ -8,9 +8,16 @@ import { t } from "../../i18n/ui";
 export interface Props {
   service: CollectionEntry<"services">;
   locale?: Locale;
+  /** Heading level for the card title; use "h2" when cards sit directly under the page h1. */
+  headingLevel?: "h2" | "h3";
 }
 
-const { service, locale = service.data.locale } = Astro.props as Props;
+const {
+  service,
+  locale = service.data.locale,
+  headingLevel = "h3",
+} = Astro.props as Props;
+const Heading = headingLevel;
 ---
 
 <Card hover={true} class="service-card">
@@ -18,11 +25,11 @@ const { service, locale = service.data.locale } = Astro.props as Props;
     <p class="service-card__eyebrow">
       {locale === "id" ? "Layanan" : "Service"}
     </p>
-    <h3 class="service-card__title">
+    <Heading class="service-card__title">
       <a href={resolveRoute(locale, `/services/${service.data.slug}`)}
         >{service.data.title}</a
       >
-    </h3>
+    </Heading>
     <p class="service-card__description">{service.data.description}</p>
     {
       service.data.priceRange && (
@@ -46,6 +53,7 @@ const { service, locale = service.data.locale } = Astro.props as Props;
     <a
       class="service-card__cta"
       href={resolveRoute(locale, `/services/${service.data.slug}`)}
+      aria-label={`${t(locale, "services.learnMore")}: ${service.data.title}`}
     >
       {t(locale, "services.learnMore")}
     </a>

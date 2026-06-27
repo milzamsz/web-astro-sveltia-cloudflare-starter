@@ -98,7 +98,7 @@ const allTags = [
     {
       featuredPost && currentPage === 1 && (
         <section class="blog-list__featured">
-          <BlogCard post={featuredPost} variant="list" locale={locale} />
+          <BlogCard post={featuredPost} variant="list" locale={locale} headingLevel="h2" />
         </section>
       )
     }
@@ -106,7 +106,7 @@ const allTags = [
     <section class="blog-list__grid">
       {
         pagePosts.map((post) => (
-          <BlogCard post={post} variant="grid" locale={locale} />
+          <BlogCard post={post} variant="grid" locale={locale} headingLevel="h2" />
         ))
       }
     </section>

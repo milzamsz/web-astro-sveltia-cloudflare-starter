@@ -11,13 +11,17 @@ export interface Props {
   post: CollectionEntry<"blog">;
   variant?: "grid" | "list";
   locale?: Locale;
+  /** Heading level for the card title; use "h2" when cards sit directly under the page h1. */
+  headingLevel?: "h2" | "h3";
 }
 
 const {
   post,
   variant = "grid",
   locale = post.data.locale,
+  headingLevel = "h3",
 } = Astro.props as Props;
+const Heading = headingLevel;
 const publishDate = new Date(post.data.publishDate);
 const readingTime = Math.max(
   1,
@@ -51,7 +55,7 @@ const href = resolveRoute(locale, `/blog/${post.id}`);
         }</span
       >
     </p>
-    <h3 class="blog-card__title"><a href={href}>{post.data.title}</a></h3>
+    <Heading class="blog-card__title"><a href={href}>{post.data.title}</a></Heading>
     <p class="blog-card__excerpt">{excerpt}</p>
     <TagList tags={post.data.tags ?? []} locale={locale} />
   </div>
