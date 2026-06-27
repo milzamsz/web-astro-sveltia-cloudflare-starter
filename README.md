@@ -43,6 +43,23 @@ Open **http://localhost:4321** — you're up and running.
 
 ---
 
+## 🎨 Make it yours
+
+After clicking **Use this template**, update these before deploying:
+
+- [ ] **`src/config/site.config.ts`** — `url` (your production domain), `name`, `description`, `author`, `email`, `socialLinks`, `header.twitter`, `ogImage`. This is the single source of truth (canonical, OG, sitemap, and `/llms.txt` all read from it; `astro.config.ts` imports `url` automatically).
+- [ ] **`public/admin/config.yml`** — `backend.repo`, `backend.base_url`, and the Cloudflare R2 `account_id` / `access_key_id` / `public_url` / `bucket`.
+- [ ] **`astro.config.ts`** — Starlight `editLink.baseUrl` and the GitHub social link.
+- [ ] **Branding** — replace `public/logos/*.svg`, `public/favicon.svg`, and the default OG image.
+- [ ] **Environment** — copy `.env.example` → `.env` (and set secrets in the Cloudflare dashboard): `SITE_URL`, `RESEND_API_KEY`, `TURNSTILE_*`, analytics, etc.
+- [ ] **Content** — edit `src/content/` (blog, services, pages, docs, settings) or manage it via `/admin`.
+- [ ] **`LICENSE`** — update the copyright holder.
+- [ ] **`CHANGELOG.md`** — reset to your own history.
+
+> Tip: search the repo for `web-astro-sveltia-cloudflare-starter` and `Your Name` / `your.email@example.com` / `yourhandle` to find remaining placeholders.
+
+---
+
 ## 📖 Documentation
 
 | Document | Audience | Purpose |
