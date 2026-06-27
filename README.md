@@ -24,7 +24,7 @@
 | **SEO** | Semantic HTML, JSON-LD, sitemap, RSS, hreflang, LLMs.txt |
 | **CI/CD** | GitHub Actions — lint, build, validate, deploy, dependabot |
 | **Design** | Tailwind CSS v4 + monochrome **OKLCH** design tokens — responsive, accessible, dark-mode ready |
-| **AI-ready** | `AGENTS.md` + `PROJECT.md` + `system/globals/` KB, three-tier architecture, `check:kpis` guardrail, convention-guard hook |
+| **AI-ready** | `AGENTS.md` + `system/globals/` KB, three-tier architecture, `check:kpis` guardrail, convention-guard hook |
 
 ---
 
@@ -55,7 +55,6 @@ Open **http://localhost:4321** — you're up and running.
 | [docs/admin-manual.md](docs/admin-manual.md) | **Admins** | Bootstrap, user management, 2FA recovery, backups |
 | [docs/editor-guide.md](docs/editor-guide.md) | **Editors** | Content editing, preview, and publishing workflow |
 | [TECHNICAL.md](TECHNICAL.md) | **Developers** | Implementation details and design decisions |
-| [GOVERNANCE.md](GOVERNANCE.md) | **Maintainers** | Project governance and decision-making |
 
 ---
 
@@ -114,14 +113,13 @@ images have alt). It runs in `pnpm lint` and is CI-friendly. A Cursor
 | Path | Tool |
 | --- | --- |
 | `AGENTS.md` | Codex, Cursor, Jules, Gemini CLI, Zed, Aider, … |
-| `PROJECT.md` | Project-specific overrides (highest priority) |
 | `DESIGN.md` | Bring-your-own-brand → tokens |
 | `.cursor/rules/*.mdc`, `.cursor/hooks.json` | Cursor |
 | `.github/copilot-instructions.md` | GitHub Copilot |
 | `.windsurfrules` | Windsurf |
 | `system/prompts/*` | Portable self-audit prompts (any chat tool) |
 
-> **Try it:** open the repo in your agent and say *"Read AGENTS.md and PROJECT.md,
+> **Try it:** open the repo in your agent and say *"Read AGENTS.md,
 > then build me a pricing page from the existing sections."*
 
 ---

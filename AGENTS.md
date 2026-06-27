@@ -4,12 +4,12 @@
 Read `.agentkanban/INSTRUCTION.md` for task workflow rules.
 Read `.agentkanban/memory.md` for project context.
 
-Enforcement mode: `warn`
+Enforcement mode: `strict`
 Review policy:
 low: planning=self-agent, implementation=self-agent
 medium: planning=self-agent, implementation=self-agent
 high: planning=independent-agent, implementation=independent-agent
-critical: planning=independent-agent, implementation=independent-agent
+critical: planning=independent-agent, implementation=independent-agent+human
 
 If a task file (`.agentkanban/tasks/**/*.md`) was referenced earlier in this conversation, re-read it before responding and always respond in and at the end the task file.
 <!-- END AGENTIC KANBAN -->
@@ -20,7 +20,6 @@ This repo is built to be operated by AI coding agents. Stay **on-system**.
 
 **Read before editing UI/design:**
 
-- `PROJECT.md` — project-specific overrides (highest priority; read first).
 - `system/globals/` — canonical design knowledge (8 files: colors, typography,
   spacing, interaction, imagery, effects, responsiveness, accessibility). One
   source of truth for all design decisions.

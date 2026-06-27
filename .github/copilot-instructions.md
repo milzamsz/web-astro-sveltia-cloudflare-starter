@@ -5,7 +5,6 @@ do not improvise design or architecture.
 
 ## Read first
 
-- `PROJECT.md` — project overrides (highest priority).
 - `system/globals/` — design knowledge base (colors, typography, spacing,
   interaction, imagery, effects, responsiveness, accessibility).
 - `src/registry.json` — components/sections/pages catalog.

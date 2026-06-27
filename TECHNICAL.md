@@ -63,8 +63,7 @@ This repo is structured to be operated by AI agents and kept on-system.
   colors, deprecated imports, stray `tailwind.config.*`; warnings on inline styles,
   hex in `<style>`, missing alt. Folded into `pnpm lint`. Real-time warn hook:
   `.cursor/hooks.json` → `.cursor/hooks/guard-conventions.mjs`.
-- **Agent config:** `AGENTS.md`, `PROJECT.md` (overrides, highest priority),
-  `DESIGN.md` (brand → tokens), `.cursor/rules/*.mdc`,
+- **Agent config:** `AGENTS.md`, `DESIGN.md` (brand → tokens), `.cursor/rules/*.mdc`,
   `.github/copilot-instructions.md`, `.windsurfrules`.
 - **Motion:** CSS-only `data-animate` scroll-reveal in `global.css`, gated by
   `@supports (animation-timeline: view())` and `prefers-reduced-motion` (never
@@ -370,7 +369,7 @@ Active planning:
 
 ## Notes For Future Work
 
-- Treat `README.md`, `GOVERNANCE.md`, and `SETUP.md` as partially roadmap-oriented until later slices are implemented.
+- Treat `README.md` and `SETUP.md` as partially roadmap-oriented until later slices are implemented.
 - Prefer current code and this document over aspirational statements in older planning text when they disagree.
 
 ## Phase 9 Route Notes

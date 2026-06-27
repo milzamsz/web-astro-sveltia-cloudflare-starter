@@ -42,6 +42,12 @@ cloudflare-pages-report.html
 # Dev verification artifacts
 screenshots/
 
+# Agentic Kanban (local task board — not part of the template)
+.agentkanban/
+
+# Lighthouse / audit reports
+lh-*.json
+
 # Temporary files
 *.swp
 *.swo

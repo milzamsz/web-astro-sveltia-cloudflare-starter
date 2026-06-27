@@ -2,7 +2,7 @@
 
 AI-operable Astro starter. Stay on-system; do not improvise design/architecture.
 
-Read first: PROJECT.md (overrides), system/globals/ (design KB), src/registry.json.
+Read first: system/globals/ (design KB), src/registry.json.
 
 Rules:
 - Design tokens only. No hardcoded hex/rgb, no Tailwind palette utilities

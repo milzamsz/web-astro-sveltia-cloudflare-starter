@@ -8,7 +8,6 @@ alwaysApply: true
 
 Single source of truth for design lives in `system/globals/` and the tokens in
 `src/styles/tokens/*.css` (exposed via the `@theme` block in `global.css`).
-Project-specific overrides in `PROJECT.md` take precedence.
 
 - **Colors:** use semantic tokens only — `bg-primary`, `text-foreground`,
   `var(--muted-foreground)`, etc. **Never** hardcode hex/rgb or use Tailwind palette
