@@ -37,6 +37,11 @@ backend:
 # GET/PUT/HEAD with the AWS SigV4 headers. See docs.
 # Docs: https://sveltiacms.app/en/docs/media/cloudflare-r2
 media_libraries:
+  # Applies to every provider: sanitize uploaded filenames (lowercase, no
+  # spaces/accents) so asset URLs never break, e.g. "GITHUB term.png" → "github-term.png".
+  all:
+    config:
+      slugify_filename: true
   cloudflare_r2:
     bucket: astro-sveltia-media
     account_id: 654e14e01fc4ff64f866b87ba50f8818
@@ -44,10 +49,9 @@ media_libraries:
     public_url: https://pub-2bbf1e2fef824357830a7d4c045dca9a.r2.dev
     prefix: uploads/
 
-# Git-backed fallback: used only if R2 isn't configured yet or an editor picks
-# "internal" storage. Keeps the CMS usable before R2 credentials are filled in.
-media_folder: public/uploads
-public_folder: /uploads
+# NOTE: No internal `media_folder` is configured on purpose — R2 is the single
+# source of truth for media so the Git repo never bloats with binaries. Every
+# upload goes straight to the R2 bucket and is served from the public_url above.
 
 # Locale-aware slug configuration — matches the _en.md suffix convention for
 # English variants and plain .md for Indonesian (default locale).
