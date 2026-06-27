@@ -2,7 +2,7 @@
 translationKey: about
 locale: en
 slug: about
-title: About Us!
+title: About Us
 description: Meet the team and vision behind the modern multilingual marketing website boilerplate.
 sections:
   - type: hero
@@ -10,15 +10,20 @@ sections:
     content: We build solid foundations for modern marketing websites with multilingual support from day one.
   - type: features
     title: Our Philosophy
+    content: ''
     items:
       - title: Developer Experience
         description: Modern tooling, type-safe, and delightful for developers.
+        icon: ''
       - title: Performance First
         description: Static-first, edge-ready, optimal Core Web Vitals out of the box.
+        icon: ''
       - title: Multilingual Native
         description: i18n routing, localized content, SEO-ready for global markets.
+        icon: ''
       - title: CMS Ready
         description: Structured content ready to integrate with your headless CMS of choice.
+        icon: ''
   - type: cta
     title: Ready to Start?
     content: Partner with a boilerplate designed for scale.
