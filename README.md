@@ -23,7 +23,8 @@
 | **Email** | Resend — transactional email for contact form & auth |
 | **SEO** | Semantic HTML, JSON-LD, sitemap, RSS, hreflang, LLMs.txt |
 | **CI/CD** | GitHub Actions — lint, build, validate, deploy, dependabot |
-| **Design** | Tailwind CSS v4 — responsive, accessible, dark-mode ready |
+| **Design** | Tailwind CSS v4 + monochrome **OKLCH** design tokens — responsive, accessible, dark-mode ready |
+| **AI-ready** | `AGENTS.md` + `PROJECT.md` + `system/globals/` KB, three-tier architecture, `check:kpis` guardrail, convention-guard hook |
 
 ---
 
@@ -89,16 +90,57 @@ Open **http://localhost:4321** — you're up and running.
 
 ---
 
+## 🤖 AI-Assisted Development
+
+This starter is built to be operated by AI coding agents and to keep their output
+**on-system**. The conventions are written once and enforced automatically.
+
+**Three-tier architecture:** Components (`src/components/ui/**`) → Sections
+(`src/components/sections/**`, single barrel) → Pages (`src/pages/**`). Compose
+pages from sections. Live galleries at `/sections` and `/pages`; a machine-readable
+catalog in `src/registry.json`.
+
+**One source of truth for design:** OKLCH tokens in `src/styles/tokens/*.css` plus
+the canonical knowledge base in `system/globals/` (colors, typography, spacing,
+interaction, imagery, effects, responsiveness, accessibility).
+
+**Guardrails:** `pnpm check:kpis` verifies design conventions (no hardcoded colors,
+no Tailwind palette utilities, no deprecated imports, no stray `tailwind.config.*`,
+images have alt). It runs in `pnpm lint` and is CI-friendly. A Cursor
+`afterFileEdit` hook (`.cursor/hooks/guard-conventions.mjs`) warns in real time.
+
+**Works with your tool:** the [AGENTS.md](AGENTS.md) standard plus per-tool configs.
+
+| Path | Tool |
+| --- | --- |
+| `AGENTS.md` | Codex, Cursor, Jules, Gemini CLI, Zed, Aider, … |
+| `PROJECT.md` | Project-specific overrides (highest priority) |
+| `DESIGN.md` | Bring-your-own-brand → tokens |
+| `.cursor/rules/*.mdc`, `.cursor/hooks.json` | Cursor |
+| `.github/copilot-instructions.md` | GitHub Copilot |
+| `.windsurfrules` | Windsurf |
+| `system/prompts/*` | Portable self-audit prompts (any chat tool) |
+
+> **Try it:** open the repo in your agent and say *"Read AGENTS.md and PROJECT.md,
+> then build me a pricing page from the existing sections."*
+
+---
+
 ## 🗂️ Project Structure
 
 ```
 ├── src/                  # Astro source
-│   ├── pages/            # Route pages
-│   ├── components/       # Reusable UI (Hero, FAQ, CTA, etc.)
-│   ├── layouts/          # Base layout
+│   ├── pages/            # Route pages (+ /sections, /pages showcases)
+│   ├── components/       # UI tier (ui/) + Sections tier (sections/)
+│   ├── layouts/          # Base + content layouts
+│   ├── styles/tokens/    # OKLCH design tokens (colors/typography/spacing)
 │   ├── i18n/             # Translation dictionaries
 │   ├── lib/              # Utilities, helpers, analytics
+│   ├── registry.json     # Machine-readable component/section/page catalog
 │   └── content/          # Blog, docs, CMS collections
+├── system/               # AI knowledge base (globals/) + audit prompts
+├── scripts/check-kpis.mjs # Design-convention guardrail (source of truth)
+├── .cursor/              # rules/ + hooks (convention guard)
 ├── functions/            # Cloudflare Pages Functions
 │   ├── api/              # API endpoints (auth, cms, contact)
 │   ├── admin/            # Admin middleware
@@ -131,7 +173,8 @@ Open **http://localhost:4321** — you're up and running.
 ## 🧪 Validation
 
 ```bash
-pnpm run lint              # ESLint + Stylelint + TypeScript
+pnpm run lint              # ESLint + Stylelint + TypeScript + check:kpis + validators
+pnpm run check:kpis        # Design conventions (on-system guardrail)
 pnpm run validate:i18n     # Translation consistency
 pnpm run validate:cms      # CMS configuration
 pnpm run validate:secrets  # Secret hygiene check

@@ -37,11 +37,43 @@ pnpm lint
 pnpm run lint:js
 pnpm run lint:css
 pnpm run type-check
+pnpm run check:kpis        # design-convention guardrail (folded into lint)
+node scripts/validate-registry.mjs  # registry.json ↔ filesystem sync
 pnpm run validate:i18n
 pnpm run format
 pnpm run format:check
 pnpm validate:cms
 ```
+
+## AI Development System & Design Conventions
+
+This repo is structured to be operated by AI agents and kept on-system.
+
+- **Three tiers:** Components (`src/components/ui/**`) → Sections
+  (`src/components/sections/**`, single barrel `index.ts`) → Pages
+  (`src/pages/**`). Showcases: `/sections`, `/pages` (both locales). Catalog:
+  `src/registry.json` (validated by `scripts/validate-registry.mjs`).
+- **Design tokens:** monochrome **OKLCH** in `src/styles/tokens/*.css`, exposed via
+  the `@theme` block in `global.css`. No hardcoded colors; no Tailwind palette
+  utilities. Functional status colors are the only chromatic tokens. A legacy
+  `--color-*` / `--space-*` alias bridge is retained for older components.
+- **Knowledge base:** `system/globals/` (8 canonical docs) is the single source of
+  truth for design; `system/prompts/` holds portable self-audit prompts.
+- **Guardrail:** `scripts/check-kpis.mjs` (`pnpm check:kpis`) — errors on hardcoded
+  colors, deprecated imports, stray `tailwind.config.*`; warnings on inline styles,
+  hex in `<style>`, missing alt. Folded into `pnpm lint`. Real-time warn hook:
+  `.cursor/hooks.json` → `.cursor/hooks/guard-conventions.mjs`.
+- **Agent config:** `AGENTS.md`, `PROJECT.md` (overrides, highest priority),
+  `DESIGN.md` (brand → tokens), `.cursor/rules/*.mdc`,
+  `.github/copilot-instructions.md`, `.windsurfrules`.
+- **Motion:** CSS-only `data-animate` scroll-reveal in `global.css`, gated by
+  `@supports (animation-timeline: view())` and `prefers-reduced-motion` (never
+  hides content on unsupported browsers).
+
+> Note: the duplicate top-level components (`Header/Footer/ThemeToggle/SEO/
+> Analytics/ShareButtons/TrustBlock.astro`) were removed; the active versions live
+> under `layout/`, `seo/`, and `blog/`. `Hero/CTA/FeatureGrid.astro` remain as the
+> imported wrappers.
 
 ## Current Source Layout
 
@@ -99,7 +131,11 @@ src/
     services/
       [slug].astro
   styles/
-    globals.css
+    global.css
+    tokens/
+      colors.css
+      typography.css
+      spacing.css
 scripts/
   validate-i18n.js
   validate-cms-config.cjs
@@ -119,7 +155,7 @@ wrangler.jsonc            ← New in task 007 (R2 bindings)
 
 - Static Astro app is bootstrapped and builds successfully (except pre-existing locale page issue).
 - Shared public shell exists through `BaseLayout.astro`, `Header.astro`, and `Footer.astro`.
-- Global tokens and base styles live in [src/styles/globals.css](/C:/Workspace/templates/astro-sveltia-cloudflare/src/styles/globals.css).
+- Global tokens and base styles live in [src/styles/global.css](/C:/Workspace/templates/astro-sveltia-cloudflare/src/styles/global.css), which imports modular token files under [src/styles/tokens/](/C:/Workspace/templates/astro-sveltia-cloudflare/src/styles/tokens) (`colors.css`, `typography.css`, `spacing.css`). Self-hosted Fontsource variable fonts (Manrope, Outfit, JetBrains Mono) with metric-adjusted fallback `@font-face` rules; class-based dark mode via `@custom-variant dark` + bootstrap script in `BaseLayout.astro`. Blue palette only.
 - Baseline SEO helpers exist in [src/lib/seo.ts](/C:/Workspace/templates/astro-sveltia-cloudflare/src/lib/seo.ts).
 
 ### I18n
@@ -183,7 +219,11 @@ src/
   pages/
     index.astro
   styles/
-    globals.css
+    global.css
+    tokens/
+      colors.css
+      typography.css
+      spacing.css
 scripts/
   validate-i18n.js
 public/
@@ -198,7 +238,7 @@ public/
 
 - Static Astro app is bootstrapped and builds successfully.
 - Shared public shell exists through `BaseLayout.astro`, `Header.astro`, and `Footer.astro`.
-- Global tokens and base styles live in [src/styles/globals.css](/C:/Workspace/templates/astro-sveltia-cloudflare/src/styles/globals.css).
+- Global tokens and base styles live in [src/styles/global.css](/C:/Workspace/templates/astro-sveltia-cloudflare/src/styles/global.css), which imports modular token files under [src/styles/tokens/](/C:/Workspace/templates/astro-sveltia-cloudflare/src/styles/tokens) (`colors.css`, `typography.css`, `spacing.css`). Self-hosted Fontsource variable fonts (Manrope, Outfit, JetBrains Mono) with metric-adjusted fallback `@font-face` rules; class-based dark mode via `@custom-variant dark` + bootstrap script in `BaseLayout.astro`. Blue palette only.
 - Baseline SEO helpers exist in [src/lib/seo.ts](/C:/Workspace/templates/astro-sveltia-cloudflare/src/lib/seo.ts).
 
 ### I18n
@@ -332,3 +372,18 @@ Active planning:
 
 - Treat `README.md`, `GOVERNANCE.md`, and `SETUP.md` as partially roadmap-oriented until later slices are implemented.
 - Prefer current code and this document over aspirational statements in older planning text when they disagree.
+
+## Phase 9 Route Notes
+
+- Homepage, blog, service, and page layouts now point their `ogImage` metadata at the dynamic `/og/...` endpoint instead of a static fallback.
+- `src/pages/og/[...slug].ts` renders locale-aware SVG OG cards for home, blog-list, services-list, blog detail, service detail, and static page routes.
+- `src/pages/robots.txt.ts` is the canonical robots endpoint; keep `public/robots.txt` absent so it is not shadowed.
+- `src/pages/rss.xml.ts` is the active feed route and filters to the default locale.
+
+## Phase 10 Library Utilities
+
+- `src/lib/blog.ts` and `src/lib/services.ts` provide collection access, featured/tagged lookups, related-item ranking, and pagination helpers.
+- `src/lib/schema.ts` centralizes JSON-LD builders for WebSite, Organization, Person, BlogPosting, FAQ, BreadcrumbList, and Service.
+- `src/lib/og.ts` builds shared OG SVG markup, converts it to PNG with `sharp`, and returns a cached `Response`.
+- `src/lib/content-validation.ts` exports duplicate/locale validation helpers; the build hook uses a filesystem scan so the validator runs without loading `astro:content` during config evaluation.
+- `src/lib/seo.ts` now sources canonical/OG metadata from `src/config/site.config.ts` and exposes `buildPageTitle()` plus `buildOpenGraphMeta()`.
