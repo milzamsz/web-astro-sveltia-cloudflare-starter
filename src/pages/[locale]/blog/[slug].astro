@@ -1,15 +1,16 @@
 ---
-import BaseLayout from "../../../layouts/BaseLayout.astro";
+import BlogLayout from "../../../layouts/BlogLayout.astro";
 import { getCollection, getEntry, render } from "astro:content";
 import type { CollectionEntry } from "astro:content";
-import { t } from "../../../i18n/ui";
-import { resolveRoute } from "../../../i18n/routes";
+import type { Locale } from "../../../lib/site-config";
 
 export async function getStaticPaths() {
   const allPosts: CollectionEntry<"blog">[] = await getCollection("blog");
   const paths: { params: { locale: string; slug: string } }[] = [];
   for (const locale of ["id", "en"]) {
-    const localePosts = allPosts.filter((p) => p.data.locale === locale && !p.data.draft);
+    const localePosts = allPosts.filter(
+      (p) => p.data.locale === locale && !p.data.draft,
+    );
     for (const post of localePosts) {
       paths.push({
         params: { locale, slug: post.id },
@@ -19,49 +20,14 @@ export async function getStaticPaths() {
   return paths;
 }
 
-const { locale, slug } = Astro.params as { locale: string; slug: string };
+const locale = Astro.params.locale as Locale;
+const slug = Astro.params.slug!;
 const post = await getEntry("blog", slug);
 if (!post) return new Response(null, { status: 404 });
 
-const { Content } = await render(post);
-
-const title = post.data.title;
-const description = post.data.description;
-const publishDate = new Date(post.data.publishDate);
-const tags = post.data.tags || [];
-const authorName = post.data.author || "Admin";
+const { Content, headings } = await render(post);
 ---
 
-<BaseLayout title={title} description={description} locale={locale} path={`/${locale === "id" ? "id/" : ""}blog/${post.id}`}>
-  <article class="container py-12 max-w-3xl">
-    <header class="mb-8">
-      <time class="text-sm text-muted-foreground">
-        {publishDate.toLocaleDateString(locale === "id" ? "id-ID" : "en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        })}
-      </time>
-      <h1 class="mt-1 text-4xl font-bold tracking-tight">{title}</h1>
-      {tags.length > 0 && (
-        <div class="mt-4 flex flex-wrap gap-2">
-          {tags.map((tag: string) => (
-            <span class="rounded-full bg-muted px-3 py-1 text-xs">{tag}</span>
-          ))}
-        </div>
-      )}
-      <p class="mt-2 text-muted-foreground">By {authorName}</p>
-    </header>
-
-    <div class="prose prose-gray dark:prose-invert max-w-none">
-      <Content />
-    </div>
-
-    <hr class="my-8" />
-    <nav class="flex justify-between">
-      <a href={resolveRoute(locale as "id" | "en", "/blog")} class="text-sm font-medium">
-        &larr; {t(locale as "id" | "en", "nav.blog")}
-      </a>
-    </nav>
-  </article>
-</BaseLayout>
+<BlogLayout post={post} locale={locale} headings={headings}>
+  <Content />
+</BlogLayout>

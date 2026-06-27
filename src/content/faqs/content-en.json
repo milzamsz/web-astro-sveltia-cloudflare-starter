@@ -1,0 +1,7 @@
+{
+  "question": "How do I add a new blog post?",
+  "answer": "Create a new Markdown file in `src/content/blog/` with frontmatter including `title`, `description`, `locale`, `publishDate`, and optional fields like `tags`, `featured`, and `uid`. The CMS also supports creating content via the `/admin` interface.",
+  "category": "content",
+  "order": 2,
+  "locale": "en"
+}

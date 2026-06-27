@@ -1,0 +1,7 @@
+{
+  "question": "Bagaimana cara menambahkan posting blog baru?",
+  "answer": "Buat file Markdown baru di `src/content/blog/` dengan frontmatter yang mencakup `title`, `description`, `locale`, `publishDate`, dan bidang opsional seperti `tags`, `featured`, dan `uid`. CMS juga mendukung pembuatan konten melalui antarmuka `/admin`.",
+  "category": "content",
+  "order": 2,
+  "locale": "id"
+}

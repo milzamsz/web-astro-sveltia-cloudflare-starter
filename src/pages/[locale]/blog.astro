@@ -1,54 +1,176 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { getCollection } from "astro:content";
-import type { CollectionEntry } from "astro:content";
+import { getCollection, type CollectionEntry } from "astro:content";
 import { t } from "../../i18n/ui";
+import { resolveRoute } from "../../i18n/routes";
+import { siteConfig } from "../../config/site.config";
+import { BlogCard } from "../../components/blog/index";
+import Pagination from "../../components/ui/data-display/Pagination/Pagination.astro";
+import { Badge } from "../../components/ui/index";
 
 export function getStaticPaths() {
-  return [
-    { params: { locale: "id" } },
-  ];
+  return [{ params: { locale: "id" } }, { params: { locale: "en" } }];
 }
 
 const locale = (Astro.currentLocale || "id") as "id" | "en";
+const searchParams = Astro.url.searchParams;
+const currentTag = searchParams.get("tag") ?? "";
+const currentPage = Math.max(1, Number(searchParams.get("page") || "1"));
+const slugify = (value: string) =>
+  value
+    .trim()
+    .toLowerCase()
+    .replace(/['"]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 
 const allPosts: CollectionEntry<"blog">[] = await getCollection("blog");
 const posts = allPosts
   .filter((p) => p.data.locale === locale && !p.data.draft)
-  .sort((a, b) => new Date(b.data.publishDate).getTime() - new Date(a.data.publishDate).getTime());
+  .sort(
+    (a, b) =>
+      new Date(b.data.publishDate).getTime() -
+      new Date(a.data.publishDate).getTime(),
+  );
+const filteredPosts = currentTag
+  ? posts.filter((post) =>
+      (post.data.tags ?? []).some((tag: string) => slugify(tag) === currentTag),
+    )
+  : posts;
+const featuredPost =
+  currentPage === 1
+    ? (filteredPosts.find((post) => post.data.featured) ?? filteredPosts[0])
+    : undefined;
+const gridPosts = featuredPost
+  ? filteredPosts.filter((post) => post.id !== featuredPost.id)
+  : filteredPosts;
+const postsPerPage = siteConfig.blog.postsPerPage;
+const totalPages = Math.max(1, Math.ceil(gridPosts.length / postsPerPage));
+const pagePosts = gridPosts.slice(
+  (currentPage - 1) * postsPerPage,
+  currentPage * postsPerPage,
+);
+const allTags = [
+  ...new Set(posts.flatMap((post) => post.data.tags || [])),
+].sort((a, b) => a.localeCompare(b));
 ---
 
-<BaseLayout title={t(locale, "nav.blog")} description={t(locale, "nav.blog")} locale={locale}>
-  <main class="container py-12">
-    <h1 class="text-4xl font-bold mb-8">{t(locale, "nav.blog")}</h1>
+<BaseLayout
+  title={t(locale, "nav.blog")}
+  description={t(locale, "nav.blog")}
+  locale={locale}
+  path={resolveRoute(locale, "/blog")}
+>
+  <main class="blog-list container py-12">
+    <header class="blog-list__hero">
+      <h1>{t(locale, "nav.blog")}</h1>
+      <p>
+        {
+          locale === "en"
+            ? "Articles about web development, multilingual sites, and the modern stack."
+            : "Artikel tentang pengembangan web, situs multilingual, dan stack modern."
+        }
+      </p>
+    </header>
 
-    {posts.length === 0 && (
-      <p class="text-muted-foreground">No blog posts yet.</p>
-    )}
+    {
+      allTags.length > 0 && (
+        <nav class="blog-list__tags" aria-label={t(locale, "blog.filterByTag")}>
+          {allTags.map((tag) => {
+            const tagSlug = slugify(tag);
+            const active = currentTag === tagSlug;
+            const href = active
+              ? resolveRoute(locale, "/blog")
+              : `${resolveRoute(locale, "/blog")}?tag=${tagSlug}`;
+            return (
+              <a href={href}>
+                <Badge variant={active ? "secondary" : "outline"}>{tag}</Badge>
+              </a>
+            );
+          })}
+        </nav>
+      )
+    }
 
-    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {posts.map((post) => (
-        <article class="rounded-lg border p-6 shadow-sm">
-          <time class="text-sm text-muted-foreground">
-            {new Date(post.data.publishDate).toLocaleDateString(locale === "id" ? "id-ID" : "en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </time>
-          <h2 class="mt-2 text-xl font-semibold">
-            <a href={`/blog/${post.id}`} class="hover:underline">{post.data.title}</a>
-          </h2>
-          <p class="mt-2 text-muted-foreground">{post.data.description}</p>
-          {post.data.tags && post.data.tags.length > 0 && (
-            <div class="mt-3 flex flex-wrap gap-2">
-              {post.data.tags.map((tag: string) => (
-                <span class="rounded-full bg-muted px-3 py-1 text-xs">{tag}</span>
-              ))}
-            </div>
-          )}
-        </article>
-      ))}
-    </div>
+    {
+      filteredPosts.length === 0 && (
+        <p class="blog-list__empty">{t(locale, "blog.noResults")}</p>
+      )
+    }
+
+    {
+      featuredPost && currentPage === 1 && (
+        <section class="blog-list__featured">
+          <BlogCard post={featuredPost} variant="list" locale={locale} />
+        </section>
+      )
+    }
+
+    <section class="blog-list__grid">
+      {
+        pagePosts.map((post) => (
+          <BlogCard post={post} variant="grid" locale={locale} />
+        ))
+      }
+    </section>
+
+    {
+      totalPages > 1 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          basePath={resolveRoute(locale, "/blog")}
+          query={currentTag ? { tag: currentTag } : undefined}
+          locale={locale}
+        />
+      )
+    }
   </main>
 </BaseLayout>
+
+<style>
+  .blog-list {
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  .blog-list__hero {
+    max-width: 48rem;
+    display: grid;
+    gap: var(--space-sm);
+  }
+
+  .blog-list__hero h1 {
+    margin: 0;
+    font-size: clamp(2.25rem, 4vw, 3.5rem);
+    line-height: 1.1;
+  }
+
+  .blog-list__hero p,
+  .blog-list__empty {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: 1.0625rem;
+    line-height: 1.7;
+  }
+
+  .blog-list__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  .blog-list__tags a {
+    text-decoration: none;
+  }
+
+  .blog-list__featured {
+    margin-top: var(--space-sm);
+  }
+
+  .blog-list__grid {
+    display: grid;
+    gap: var(--space-lg);
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  }
+</style>

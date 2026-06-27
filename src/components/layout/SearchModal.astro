@@ -1,0 +1,154 @@
+---
+import { Icon } from "astro-icon/components";
+import type { Locale } from "../../lib/site-config";
+import { t } from "../../i18n/ui";
+
+export interface Props {
+  locale?: Locale;
+}
+
+const isProd = import.meta.env.PROD;
+const { locale = "en" } = Astro.props as Props;
+---
+
+<dialog
+  id="search-modal"
+  class="search-modal"
+  aria-label={t(locale, "search.title")}
+>
+  <div class="search-modal__panel">
+    <div class="search-modal__header">
+      <h2 class="search-modal__title">{t(locale, "search.title")}</h2>
+      <button
+        type="button"
+        class="search-modal__close"
+        data-search-close
+        aria-label={t(locale, "aria.closeModal")}
+      >
+        <Icon name="lucide:x" />
+      </button>
+    </div>
+
+    {
+      isProd ? (
+        <>
+          <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+          <div class="search-modal__ui" data-pagefind-ui />
+        </>
+      ) : (
+        <p class="search-modal__fallback">{t(locale, "search.devFallback")}</p>
+      )
+    }
+  </div>
+</dialog>
+
+{isProd && <script src="/pagefind/pagefind-ui.js" defer />}
+
+<script is:inline>
+  const dialog = document.getElementById("search-modal");
+  const triggers = document.querySelectorAll("[data-search-trigger]");
+  const closeButton = dialog?.querySelector("[data-search-close]");
+  let pagefindInitialized = false;
+
+  const openSearch = () => {
+    if (!dialog || typeof dialog.showModal !== "function") {
+      return;
+    }
+
+    dialog.showModal();
+
+    if (window.PagefindUI && !pagefindInitialized) {
+      pagefindInitialized = true;
+      window.__pagefindUI = new window.PagefindUI({
+        element: "[data-pagefind-ui]",
+        showSubResults: true,
+        autofocus: true,
+      });
+    }
+  };
+
+  const closeSearch = () => {
+    if (dialog?.open) {
+      dialog.close();
+    }
+  };
+
+  triggers.forEach((trigger) => {
+    trigger.addEventListener("click", openSearch);
+  });
+
+  closeButton?.addEventListener("click", closeSearch);
+
+  dialog?.addEventListener("click", (event) => {
+    if (event.target === dialog) {
+      closeSearch();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    const isShortcut =
+      (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k";
+    if (isShortcut) {
+      event.preventDefault();
+      openSearch();
+    }
+  });
+</script>
+
+<style>
+  .search-modal::backdrop {
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(0.25rem);
+  }
+
+  .search-modal {
+    border: none;
+    border-radius: 1rem;
+    padding: 0;
+    width: min(42rem, calc(100vw - 2rem));
+    max-width: none;
+    background: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .search-modal__panel {
+    padding: var(--space-lg);
+  }
+
+  .search-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+  }
+
+  .search-modal__title {
+    margin: 0;
+    font-size: 1.125rem;
+  }
+
+  .search-modal__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--color-border);
+    border-radius: 9999px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .search-modal__close:hover {
+    border-color: var(--color-brand-primary);
+    color: var(--color-brand-primary);
+  }
+
+  .search-modal__fallback {
+    margin: 0;
+    color: var(--color-text-secondary);
+  }
+</style>

@@ -1,5 +1,5 @@
+import { siteConfig } from "../config/site.config";
 import type { Locale } from "./site-config";
-import { SITE_CONFIG } from "./site-config";
 import { localePrefix, stripLocale } from "../i18n/routes";
 
 export interface SeoMeta {
@@ -17,7 +17,7 @@ export interface SeoMeta {
 export function canonicalUrl(locale: Locale, path: string): string {
   const prefix = localePrefix(locale);
   const normalized = path.replace(/\/$/, "");
-  return `${SITE_CONFIG.url}${prefix}${normalized || ""}`;
+  return `${siteConfig.url}${prefix}${normalized || ""}`;
 }
 
 /**
@@ -32,9 +32,9 @@ export function hreflangLinks(path: string): Array<{
   // Strip locale prefix to get the content path
   const contentPath = stripLocale(path);
 
-  return SITE_CONFIG.locales.map((loc) => ({
+  return siteConfig.i18n.locales.map((loc) => ({
     rel: "alternate",
-    href: canonicalUrl(loc, contentPath),
+    href: canonicalUrl(loc as Locale, contentPath),
     hreflang: loc,
   }));
 }
@@ -46,9 +46,9 @@ export function jsonLdWebSite(meta: SeoMeta) {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: SITE_CONFIG.name,
-    url: SITE_CONFIG.url,
-    description: SITE_CONFIG.description,
+    name: siteConfig.name,
+    url: siteConfig.url,
+    description: siteConfig.description,
     inLanguage: meta.locale,
   };
 }
@@ -60,14 +60,18 @@ export function jsonLdWebSite(meta: SeoMeta) {
  */
 export function ogMeta(meta: SeoMeta) {
   const url = canonicalUrl(meta.locale, meta.path);
-  const imageUrl = meta.image || (meta.path ? canonicalUrl(meta.locale, meta.path.replace(/^\//, '/')) : undefined);
+  const imageUrl =
+    meta.image ||
+    (meta.path
+      ? canonicalUrl(meta.locale, meta.path.replace(/^\//, "/"))
+      : undefined);
 
   const base: Record<string, string> = {
     "og:title": meta.title,
     "og:description": meta.description,
     "og:url": url,
     "og:locale": meta.locale,
-    "og:site_name": SITE_CONFIG.name,
+    "og:site_name": siteConfig.name,
     "og:type": "website",
     "twitter:card": "summary_large_image",
     "twitter:title": meta.title,
@@ -94,9 +98,9 @@ export function jsonLdOrganization() {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: SITE_CONFIG.name,
-    url: SITE_CONFIG.url,
-    description: SITE_CONFIG.description,
+    name: siteConfig.name,
+    url: siteConfig.url,
+    description: siteConfig.description,
   };
 }
 
@@ -118,7 +122,7 @@ export function jsonLdService(service: {
     inLanguage: service.locale,
     provider: {
       "@type": "Organization",
-      name: SITE_CONFIG.name,
+      name: siteConfig.name,
     },
   };
 }
@@ -126,7 +130,9 @@ export function jsonLdService(service: {
 /**
  * JSON-LD FAQ schema (FAQ sections).
  */
-export function jsonLdFAQ(questions: Array<{ question: string; answer: string }>) {
+export function jsonLdFAQ(
+  questions: Array<{ question: string; answer: string }>,
+) {
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -155,4 +161,26 @@ export function jsonLdBreadcrumb(items: Array<{ name: string; url: string }>) {
       item: item.url,
     })),
   };
+}
+
+export function buildPageTitle(
+  title: string,
+  siteName: string = siteConfig.name,
+) {
+  const suffix = ` | ${siteName}`;
+  const limit = 60;
+  const trimmed = title.trim();
+  if (`${trimmed}${suffix}`.length <= limit) {
+    return `${trimmed}${suffix}`;
+  }
+
+  const maxTitleLength = Math.max(1, limit - suffix.length);
+  return `${trimmed.slice(0, maxTitleLength - 1).trimEnd()}…${suffix}`;
+}
+
+export function buildOpenGraphMeta(meta: SeoMeta) {
+  return ogMeta({
+    ...meta,
+    title: buildPageTitle(meta.title),
+  });
 }

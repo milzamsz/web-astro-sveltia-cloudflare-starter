@@ -1,0 +1,104 @@
+---
+import type { CollectionEntry } from "astro:content";
+import TagList from "./TagList.astro";
+import BlogImageSVG from "./BlogImageSVG.astro";
+import { type Locale } from "../../lib/site-config";
+import { t } from "../../i18n/ui";
+
+export interface Props {
+  post: CollectionEntry<"blog">;
+  locale?: Locale;
+}
+
+const { post, locale = post.data.locale } = Astro.props as Props;
+const publishDate = new Date(post.data.publishDate);
+const readingTime = Math.max(
+  1,
+  Math.ceil((post.body ?? "").trim().split(/\s+/).filter(Boolean).length / 200),
+);
+---
+
+<header class="article-hero">
+  <div class="article-hero__content">
+    <p class="article-hero__eyebrow">{t(locale, "blog.article")}</p>
+    <h1>{post.data.title}</h1>
+    <p class="article-hero__description">{post.data.description}</p>
+    <div class="article-hero__meta">
+      <span>{post.data.author}</span>
+      <time datetime={publishDate.toISOString()}>
+        {
+          publishDate.toLocaleDateString(locale === "id" ? "id-ID" : "en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })
+        }
+      </time>
+      <span
+        >{
+          t(locale, "blog.minutesRead").replace("{n}", String(readingTime))
+        }</span
+      >
+    </div>
+    <TagList tags={post.data.tags ?? []} locale={locale} />
+  </div>
+  <div class="article-hero__media">
+    <BlogImageSVG slug={post.data.svgSlug ?? post.id} title={post.data.title} />
+  </div>
+</header>
+
+<style>
+  .article-hero {
+    display: grid;
+    gap: var(--space-xl);
+    align-items: center;
+    grid-template-columns: minmax(0, 1.1fr) minmax(18rem, 0.9fr);
+    margin-bottom: var(--space-2xl);
+  }
+
+  .article-hero__content {
+    display: grid;
+    gap: var(--space-md);
+  }
+
+  .article-hero__eyebrow {
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.75rem;
+    color: var(--color-brand-primary);
+    font-weight: 700;
+  }
+
+  .article-hero h1 {
+    margin: 0;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    line-height: 1.05;
+  }
+
+  .article-hero__description {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: 1.125rem;
+    line-height: 1.7;
+  }
+
+  .article-hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+  }
+
+  .article-hero__media :global(svg) {
+    border-radius: 1rem;
+    overflow: hidden;
+  }
+
+  @media (max-width: 48rem) {
+    .article-hero {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

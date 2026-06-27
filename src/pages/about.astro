@@ -33,24 +33,34 @@ const ctaSection = sections.find((s) => s.type === "cta");
   locale={locale}
   path={"/about"}
 >
-  {heroSection && (
-    <Hero
-      title={heroSection.title || page?.data.title || ""}
-      content={heroSection.content}
-      locale={locale}
-    />
-  )}
-  {featuresSection && (
-    <FeatureGrid
-      title={featuresSection.title}
-      features={(featuresSection.items || []).map((i) => ({
-        title: i.title || "",
-        description: i.description || "",
-        icon: i.icon,
-      }))}
-    />
-  )}
-  {ctaSection && (
-    <CTA title={ctaSection.title || ""} content={ctaSection.content} locale={locale} />
-  )}
+  {
+    heroSection && (
+      <Hero
+        title={heroSection.title || page?.data.title || ""}
+        content={heroSection.content}
+        locale={locale}
+      />
+    )
+  }
+  {
+    featuresSection && (
+      <FeatureGrid
+        title={featuresSection.title}
+        features={(featuresSection.items || []).map((i) => ({
+          title: i.title || "",
+          description: i.description || "",
+          icon: i.icon,
+        }))}
+      />
+    )
+  }
+  {
+    ctaSection && (
+      <CTA
+        title={ctaSection.title || ""}
+        content={ctaSection.content}
+        locale={locale}
+      />
+    )
+  }
 </BaseLayout>

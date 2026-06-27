@@ -1,0 +1,289 @@
+---
+import type { Locale } from "../../lib/site-config";
+import {
+  Hero,
+  FeatureTabs,
+  StackMarquee,
+  Credibility,
+  LighthouseScores,
+  CTA,
+  SocialProof,
+  FeatureGrid,
+  FAQ,
+  Newsletter,
+  Pricing,
+  Team,
+  Comparison,
+  LogoCloud,
+} from "../sections";
+
+export interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props as Props;
+const isId = locale === "id";
+
+const tx = {
+  intro: isId
+    ? "Galeri bagian (sections) yang siap pakai. Setiap blok memakai design token yang sama dan mendukung mode gelap."
+    : "A gallery of ready-to-use sections. Every block uses the same design tokens and supports dark mode.",
+};
+
+const featureTabs = [
+  {
+    id: "speed",
+    icon: "zap",
+    heading: isId ? "Cepat sejak awal" : "Fast from the start",
+    description: isId
+      ? "Static-first dengan islands. Render di edge."
+      : "Static-first with islands. Rendered at the edge.",
+    visual: "edge.render()",
+  },
+  {
+    id: "content",
+    icon: "pen-line",
+    heading: isId ? "Konten Git-based" : "Git-based content",
+    description: isId
+      ? "Sveltia CMS menulis langsung ke repo."
+      : "Sveltia CMS commits straight to your repo.",
+    visual: "content.commit()",
+  },
+  {
+    id: "growth",
+    icon: "trending-up",
+    heading: isId ? "Siap SEO" : "Built to grow",
+    description: isId
+      ? "OG image, sitemap, RSS, dan i18n bawaan."
+      : "OG images, sitemap, RSS, and i18n included.",
+    visual: "seo.score(100)",
+  },
+];
+
+const stack = [
+  { name: "Astro", version: "7.x", icon: "simple-icons:astro" },
+  { name: "Tailwind CSS", version: "4.x", icon: "simple-icons:tailwindcss" },
+  { name: "Cloudflare", version: "", icon: "simple-icons:cloudflare" },
+  { name: "TypeScript", version: "5.x", icon: "simple-icons:typescript" },
+];
+
+const stats = [
+  { value: "100", label: "Lighthouse" },
+  { value: "2", label: isId ? "Bahasa" : "Locales" },
+  { value: "16+", label: "Sections" },
+];
+
+const features = [
+  {
+    title: isId ? "Komponen" : "Components",
+    description: isId
+      ? "Pustaka UI berbasis token."
+      : "Token-driven UI library.",
+    icon: "code",
+  },
+  {
+    title: isId ? "Performa" : "Performance",
+    description: isId ? "Render di edge." : "Edge rendering.",
+    icon: "speed",
+  },
+  {
+    title: isId ? "Global" : "Global",
+    description: isId ? "i18n bawaan." : "i18n built in.",
+    icon: "globe",
+  },
+];
+
+const plans = [
+  {
+    name: "Starter",
+    price: "$0",
+    period: isId ? "selamanya" : "forever",
+    description: isId ? "Untuk proyek pribadi." : "For personal projects.",
+    features: [
+      isId ? "Semua sections" : "All sections",
+      isId ? "Mode gelap" : "Dark mode",
+      "MIT",
+    ],
+    cta: { label: isId ? "Mulai" : "Get started", href: "#" },
+  },
+  {
+    name: "Pro",
+    price: "$29",
+    period: isId ? "bln" : "mo",
+    description: isId ? "Untuk tim." : "For teams.",
+    features: [
+      isId ? "Semua di Starter" : "Everything in Starter",
+      isId ? "Dukungan prioritas" : "Priority support",
+      isId ? "Komponen premium" : "Premium components",
+    ],
+    cta: { label: isId ? "Coba Pro" : "Try Pro", href: "#" },
+    featured: true,
+  },
+];
+
+const team = [
+  { name: "Ada Lovelace", role: isId ? "Insinyur" : "Engineer" },
+  { name: "Alan Turing", role: isId ? "Desainer" : "Designer" },
+  { name: "Grace Hopper", role: "Product" },
+];
+
+const comparisonColumns = ["Starter", "Pro"];
+const comparisonRows = [
+  { label: isId ? "Sections" : "Sections", values: [true, true] },
+  { label: isId ? "Mode gelap" : "Dark mode", values: [true, true] },
+  {
+    label: isId ? "Dukungan prioritas" : "Priority support",
+    values: [false, true],
+  },
+];
+
+const logos = [
+  { name: "Astro", icon: "simple-icons:astro" },
+  { name: "Tailwind", icon: "simple-icons:tailwindcss" },
+  { name: "Cloudflare", icon: "simple-icons:cloudflare" },
+  { name: "Sveltia", icon: "simple-icons:svelte" },
+];
+
+const testimonials = [
+  {
+    quote: isId
+      ? "Foundation terbaik untuk situs yang dibantu AI."
+      : "The best foundation for AI-assisted sites.",
+    author: "Jane Doe",
+    role: "CTO, Acme",
+  },
+  {
+    quote: isId
+      ? "Sistem desainnya membuat AI tetap on-system."
+      : "The design system keeps AI on-system.",
+    author: "John Roe",
+    role: "Founder, Beta",
+  },
+];
+
+const faqs = [
+  {
+    question: isId ? "Apakah gratis?" : "Is it free?",
+    answer: isId ? "Ya, lisensi MIT." : "Yes, MIT licensed.",
+  },
+  {
+    question: isId ? "Mendukung i18n?" : "Does it support i18n?",
+    answer: isId ? "Ya, en + id." : "Yes, en + id.",
+  },
+];
+
+const blocks = [
+  { name: "Hero", node: 0 },
+  { name: "FeatureTabs", node: 1 },
+  { name: "LogoCloud", node: 2 },
+  { name: "Credibility (Stats)", node: 3 },
+  { name: "StackMarquee", node: 4 },
+  { name: "Pricing", node: 5 },
+  { name: "Comparison", node: 6 },
+  { name: "Team", node: 7 },
+  { name: "SocialProof", node: 8 },
+  { name: "FeatureGrid", node: 9 },
+  { name: "LighthouseScores", node: 10 },
+  { name: "Newsletter", node: 11 },
+  { name: "FAQ", node: 12 },
+  { name: "CTA", node: 13 },
+];
+---
+
+<div class="showcase">
+  <header class="section-head">
+    <p class="section-head__eyebrow">Sections</p>
+    <h1 class="section-head__title">{isId ? "Galeri Sections" : "Sections Gallery"}</h1>
+    <p class="section-head__lead">{tx.intro}</p>
+  </header>
+
+  {
+    blocks.map((block) => (
+      <section class="showcase__item">
+        <p class="showcase__label">{block.name}</p>
+        <div class="showcase__demo">
+          {block.node === 0 && (
+            <Hero
+              variant="centered"
+              size="sm"
+              eyebrow="Hero"
+              headline={isId ? "Judul yang berdampak" : "A headline that lands"}
+              subheadline={
+                isId
+                  ? "Subjudul yang ringkas dan jelas."
+                  : "A concise, clear supporting line."
+              }
+              primaryCta={{ label: isId ? "Mulai" : "Get started", href: "/" }}
+              secondaryCta={{ label: "GitHub", href: "/" }}
+              locale={locale}
+            />
+          )}
+          {block.node === 1 && <FeatureTabs client:visible tabs={featureTabs} />}
+          {block.node === 2 && (
+            <LogoCloud title={isId ? "Dipercaya oleh" : "Trusted by"} logos={logos} />
+          )}
+          {block.node === 3 && <Credibility stats={stats} />}
+          {block.node === 4 && <StackMarquee items={stack} />}
+          {block.node === 5 && (
+            <Pricing
+              title={isId ? "Harga" : "Pricing"}
+              description={isId ? "Sederhana dan transparan." : "Simple and transparent."}
+              plans={plans}
+            />
+          )}
+          {block.node === 6 && (
+            <Comparison
+              title={isId ? "Perbandingan" : "Compare plans"}
+              columns={comparisonColumns}
+              rows={comparisonRows}
+            />
+          )}
+          {block.node === 7 && (
+            <Team title={isId ? "Tim" : "Team"} members={team} />
+          )}
+          {block.node === 8 && (
+            <SocialProof
+              title={isId ? "Apa kata mereka" : "What people say"}
+              items={testimonials}
+            />
+          )}
+          {block.node === 9 && (
+            <FeatureGrid title={isId ? "Fitur" : "Features"} features={features} />
+          )}
+          {block.node === 10 && <LighthouseScores />}
+          {block.node === 11 && <Newsletter />}
+          {block.node === 12 && (
+            <FAQ title={isId ? "Pertanyaan umum" : "FAQ"} items={faqs} />
+          )}
+          {block.node === 13 && (
+            <CTA
+              title={isId ? "Siap membangun?" : "Ready to build?"}
+              content={isId ? "Mulai dari foundation yang bersih." : "Start from a clean foundation."}
+              primaryText={isId ? "Mulai" : "Get started"}
+              primaryHref="/"
+            />
+          )}
+        </div>
+      </section>
+    ))
+  }
+</div>
+
+<style>
+  .showcase {
+    padding-block: var(--space-2xl);
+  }
+
+  .showcase__item {
+    margin-block: var(--space-2xl);
+    border-top: 1px solid var(--border);
+    padding-top: var(--space-lg);
+  }
+
+  .showcase__label {
+    margin: 0 0 var(--space-md);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--muted-foreground);
+  }
+</style>

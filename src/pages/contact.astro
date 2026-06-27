@@ -16,12 +16,14 @@ const page = allPages.find(
 );
 
 const allSettings = await getCollection("settings");
-const settings = allSettings[0]?.data as {
-  mapLatitude?: string;
-  mapLongitude?: string;
-  orgName?: string;
-  orgEmail?: string;
-} | undefined;
+const settings = allSettings[0]?.data as
+  | {
+      mapLatitude?: string;
+      mapLongitude?: string;
+      orgName?: string;
+      orgEmail?: string;
+    }
+  | undefined;
 
 const lat = settings?.mapLatitude || "-6.2088";
 const lng = settings?.mapLongitude || "106.8456";
@@ -47,15 +49,36 @@ const ctaSection = sections.find((s) => s.type === "cta");
   locale={locale}
   path={"/contact"}
 >
-  {heroSection && (
-    <Hero title={heroSection.title || page?.data.title || ""} content={heroSection.content} locale={locale} />
-  )}
-  {featuresSection && (
-    <FeatureGrid title={featuresSection.title} features={(featuresSection.items || []).map((i) => ({ title: i.title || "", description: i.description || "", icon: i.icon }))} />
-  )}
-  {ctaSection && (
-    <CTA title={ctaSection.title || ""} content={ctaSection.content} locale={locale} />
-  )}
+  {
+    heroSection && (
+      <Hero
+        title={heroSection.title || page?.data.title || ""}
+        content={heroSection.content}
+        locale={locale}
+      />
+    )
+  }
+  {
+    featuresSection && (
+      <FeatureGrid
+        title={featuresSection.title}
+        features={(featuresSection.items || []).map((i) => ({
+          title: i.title || "",
+          description: i.description || "",
+          icon: i.icon,
+        }))}
+      />
+    )
+  }
+  {
+    ctaSection && (
+      <CTA
+        title={ctaSection.title || ""}
+        content={ctaSection.content}
+        locale={locale}
+      />
+    )
+  }
 
   <section class="contact-section container">
     <div class="contact-section__grid">
@@ -65,84 +88,158 @@ const ctaSection = sections.find((s) => s.type === "cta");
           <!-- Honeypot field — hidden from users, traps bots -->
           <div style="position: absolute; left: -9999px;" aria-hidden="true">
             <label for="website">Website</label>
-            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+            <input
+              type="text"
+              id="website"
+              name="website"
+              tabindex="-1"
+              autocomplete="off"
+            />
           </div>
 
           <div class="form-field">
-            <label for="name">{isId ? "Nama" : "Name"} <span aria-label="required">*</span></label>
-            <input type="text" id="name" name="name" required minlength="2" maxlength="100" placeholder={isId ? "Nama Anda" : "Your name"} />
+            <label for="name"
+              >{isId ? "Nama" : "Name"}
+              <span aria-label="required">*</span></label
+            >
+            <input
+              type="text"
+              id="name"
+              name="name"
+              required
+              minlength="2"
+              maxlength="100"
+              placeholder={isId ? "Nama Anda" : "Your name"}
+            />
           </div>
 
           <div class="form-field">
-            <label for="email">Email <span aria-label="required">*</span></label>
-            <input type="email" id="email" name="email" required placeholder="you@example.com" />
+            <label for="email">Email <span aria-label="required">*</span></label
+            >
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              placeholder="you@example.com"
+            />
           </div>
 
           <div class="form-field">
             <label for="subject">{isId ? "Subjek" : "Subject"}</label>
-            <input type="text" id="subject" name="subject" maxlength="200" placeholder={isId ? "Subjek pesan" : "Message subject"} />
+            <input
+              type="text"
+              id="subject"
+              name="subject"
+              maxlength="200"
+              placeholder={isId ? "Subjek pesan" : "Message subject"}
+            />
           </div>
 
           <div class="form-field">
-            <label for="message">{isId ? "Pesan" : "Message"} <span aria-label="required">*</span></label>
-            <textarea id="message" name="message" required minlength="10" maxlength="5000" rows="5" placeholder={isId ? "Tulis pesan Anda di sini..." : "Write your message here..."}></textarea>
+            <label for="message"
+              >{isId ? "Pesan" : "Message"}
+              <span aria-label="required">*</span></label
+            >
+            <textarea
+              id="message"
+              name="message"
+              required
+              minlength="10"
+              maxlength="5000"
+              rows="5"
+              placeholder={isId
+                ? "Tulis pesan Anda di sini..."
+                : "Write your message here..."}></textarea>
           </div>
 
           <div id="turnstile-container" class="form-field"></div>
 
           <div class="form-actions">
             <button type="submit" id="submit-btn">
-              <span id="submit-text">{isId ? "Kirim Pesan" : "Send Message"}</span>
-              <span id="submit-loading" style="display:none">{isId ? "Mengirim..." : "Sending..."}</span>
+              <span id="submit-text"
+                >{isId ? "Kirim Pesan" : "Send Message"}</span
+              >
+              <span id="submit-loading" style="display:none"
+                >{isId ? "Mengirim..." : "Sending..."}</span
+              >
             </button>
           </div>
 
-          <div id="form-success" class="form-message form-message--success" role="status" hidden>
-            {isId ? "Pesan Anda telah terkirim. Kami akan menghubungi Anda segera." : "Your message has been sent. We will get back to you soon."}
+          <div
+            id="form-success"
+            class="form-message form-message--success"
+            role="status"
+            hidden
+          >
+            {
+              isId
+                ? "Pesan Anda telah terkirim. Kami akan menghubungi Anda segera."
+                : "Your message has been sent. We will get back to you soon."
+            }
           </div>
-          <div id="form-error" class="form-message form-message--error" role="alert" hidden></div>
+          <div
+            id="form-error"
+            class="form-message form-message--error"
+            role="alert"
+            hidden
+          >
+          </div>
         </form>
       </div>
 
       <div class="contact-section__info">
-        {hasMap && (
-          <div class="contact-section__map">
-            <iframe
-              src={`https://www.openstreetmap.org/export/embed.html?bbox=${Number(lng) - 0.05}%2C${Number(lat) - 0.05}%2C${Number(lng) + 0.05}%2C${Number(lat) + 0.05}&layer=mapnik&marker=${lat}%2C${lng}`}
-              width="100%"
-              height="300"
-              style="border:0; border-radius: 8px;"
-              loading="lazy"
-              title={isId ? "Peta lokasi" : "Location map"}
-            ></iframe>
-            <p class="contact-section__address">
-              <a href={`https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=15/${lat}/${lng}`} target="_blank" rel="noopener noreferrer">
-                {isId ? "Lihat di OpenStreetMap" : "View on OpenStreetMap"}
-              </a>
-            </p>
-          </div>
-        )}
+        {
+          hasMap && (
+            <div class="contact-section__map">
+              <iframe
+                src={`https://www.openstreetmap.org/export/embed.html?bbox=${Number(lng) - 0.05}%2C${Number(lat) - 0.05}%2C${Number(lng) + 0.05}%2C${Number(lat) + 0.05}&layer=mapnik&marker=${lat}%2C${lng}`}
+                width="100%"
+                height="300"
+                style="border:0; border-radius: 8px;"
+                loading="lazy"
+                title={isId ? "Peta lokasi" : "Location map"}
+              />
+              <p class="contact-section__address">
+                <a
+                  href={`https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=15/${lat}/${lng}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {isId ? "Lihat di OpenStreetMap" : "View on OpenStreetMap"}
+                </a>
+              </p>
+            </div>
+          )
+        }
 
-        {settings?.orgEmail && (
-          <div class="contact-section__email">
-            <a href={`mailto:${settings.orgEmail}`}>{settings.orgEmail}</a>
-          </div>
-        )}
+        {
+          settings?.orgEmail && (
+            <div class="contact-section__email">
+              <a href={`mailto:${settings.orgEmail}`}>{settings.orgEmail}</a>
+            </div>
+          )
+        }
       </div>
     </div>
   </section>
 
   <script>
     const form = document.getElementById("contact-form") as HTMLFormElement;
-    const submitBtn = document.getElementById("submit-btn") as HTMLButtonElement;
+    const submitBtn = document.getElementById(
+      "submit-btn",
+    ) as HTMLButtonElement;
     const submitText = document.getElementById("submit-text") as HTMLElement;
-    const submitLoading = document.getElementById("submit-loading") as HTMLElement;
+    const submitLoading = document.getElementById(
+      "submit-loading",
+    ) as HTMLElement;
     const successDiv = document.getElementById("form-success") as HTMLElement;
     const errorDiv = document.getElementById("form-error") as HTMLElement;
 
     // Load Turnstile
     const turnstileScript = document.createElement("script");
-    turnstileScript.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+    turnstileScript.src =
+      "https://challenges.cloudflare.com/turnstile/v0/api.js";
     turnstileScript.async = true;
     turnstileScript.defer = true;
     document.head.appendChild(turnstileScript);
@@ -172,9 +269,15 @@ const ctaSection = sections.find((s) => s.type === "cta");
       successDiv.hidden = true;
 
       // Validate required fields
-      const name = (document.getElementById("name") as HTMLInputElement).value.trim();
-      const email = (document.getElementById("email") as HTMLInputElement).value.trim();
-      const message = (document.getElementById("message") as HTMLTextAreaElement).value.trim();
+      const name = (
+        document.getElementById("name") as HTMLInputElement
+      ).value.trim();
+      const email = (
+        document.getElementById("email") as HTMLInputElement
+      ).value.trim();
+      const message = (
+        document.getElementById("message") as HTMLTextAreaElement
+      ).value.trim();
 
       if (!name || !email || !message) {
         errorDiv.textContent = "Please fill in all required fields.";
@@ -193,7 +296,9 @@ const ctaSection = sections.find((s) => s.type === "cta");
           body: JSON.stringify({
             name,
             email,
-            subject: (document.getElementById("subject") as HTMLInputElement).value.trim(),
+            subject: (
+              document.getElementById("subject") as HTMLInputElement
+            ).value.trim(),
             message,
             "cf-turnstile-response": turnstileToken,
           }),
@@ -202,7 +307,8 @@ const ctaSection = sections.find((s) => s.type === "cta");
         const data = await res.json();
 
         if (!res.ok) {
-          errorDiv.textContent = data.message || "Something went wrong. Please try again.";
+          errorDiv.textContent =
+            data.message || "Something went wrong. Please try again.";
           errorDiv.hidden = false;
           return;
         }
@@ -226,7 +332,9 @@ const ctaSection = sections.find((s) => s.type === "cta");
 </BaseLayout>
 
 <style>
-  .contact-section { padding-block: var(--space-2xl); }
+  .contact-section {
+    padding-block: var(--space-2xl);
+  }
   .contact-section__grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -234,10 +342,18 @@ const ctaSection = sections.find((s) => s.type === "cta");
     align-items: start;
   }
   @media (max-width: 768px) {
-    .contact-section__grid { grid-template-columns: 1fr; }
+    .contact-section__grid {
+      grid-template-columns: 1fr;
+    }
   }
-  .form-field { margin-bottom: 1rem; }
-  .form-field label { display: block; font-weight: 600; margin-bottom: 0.25rem; }
+  .form-field {
+    margin-bottom: 1rem;
+  }
+  .form-field label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
   .form-field input,
   .form-field textarea {
     width: 100%;
@@ -247,8 +363,13 @@ const ctaSection = sections.find((s) => s.type === "cta");
     font-size: 1rem;
     font-family: inherit;
   }
-  .form-field textarea { resize: vertical; min-height: 120px; }
-  .form-actions { margin-top: 1.5rem; }
+  .form-field textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+  .form-actions {
+    margin-top: 1.5rem;
+  }
   .form-actions button {
     padding: 0.75rem 2rem;
     background: var(--color-primary, #1e40af);
@@ -259,19 +380,43 @@ const ctaSection = sections.find((s) => s.type === "cta");
     cursor: pointer;
     transition: opacity 0.2s;
   }
-  .form-actions button:disabled { opacity: 0.6; cursor: not-allowed; }
+  .form-actions button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
   .form-message {
     margin-top: 1rem;
     padding: 0.75rem 1rem;
     border-radius: 6px;
     font-size: 0.9375rem;
   }
-  .form-message--success { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
-  .form-message--error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
-  .contact-section__map { margin-bottom: 1.5rem; }
-  .contact-section__map iframe { max-width: 100%; }
-  .contact-section__address { margin-top: 0.5rem; }
-  .contact-section__address a { color: var(--color-primary, #1e40af); }
-  .contact-section__email { margin-top: 1rem; }
-  .contact-section__email a { color: var(--color-primary, #1e40af); font-size: 1.125rem; }
+  .form-message--success {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+  }
+  .form-message--error {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  }
+  .contact-section__map {
+    margin-bottom: 1.5rem;
+  }
+  .contact-section__map iframe {
+    max-width: 100%;
+  }
+  .contact-section__address {
+    margin-top: 0.5rem;
+  }
+  .contact-section__address a {
+    color: var(--color-primary, #1e40af);
+  }
+  .contact-section__email {
+    margin-top: 1rem;
+  }
+  .contact-section__email a {
+    color: var(--color-primary, #1e40af);
+    font-size: 1.125rem;
+  }
 </style>

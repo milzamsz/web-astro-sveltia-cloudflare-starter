@@ -1,0 +1,53 @@
+---
+export interface Props {
+  slug: string;
+  title: string;
+}
+
+const { slug, title } = Astro.props as Props;
+
+function hashString(input: string) {
+  let hash = 0;
+  for (let index = 0; index < input.length; index += 1) {
+    hash = (hash << 5) - hash + input.charCodeAt(index);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+}
+
+const hash = hashString(slug || title);
+const hue = hash % 360;
+const accent = (hue + 40) % 360;
+const shapes = Array.from({ length: 4 }, (_, index) => index);
+---
+
+<svg viewBox="0 0 1200 630" role="img" aria-label={title} class="blog-svg">
+  <defs>
+    <linearGradient id={`bg-${hash}`} x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color={`oklch(0.2 0.12 ${hue})`}></stop>
+      <stop offset="100%" stop-color={`oklch(0.3 0.16 ${accent})`}></stop>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill={`url(#bg-${hash})`} rx="48"></rect>
+  {
+    shapes.map((shape) => (
+      <circle
+        cx={180 + shape * 230}
+        cy={160 + (shape % 2) * 180}
+        r={72 + shape * 8}
+        fill={`oklch(0.7 0.17 ${(hue + shape * 30) % 360} / 0.18)`}
+      />
+    ))
+  }
+  <text x="72" y="540" fill="white" font-size="64" font-weight="700">
+    {title}
+  </text>
+</svg>
+
+<style>
+  .blog-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+</style>

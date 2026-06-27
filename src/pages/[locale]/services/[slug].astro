@@ -1,0 +1,38 @@
+---
+import ServiceLayout from "../../../layouts/ServiceLayout.astro";
+import { getCollection, render } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import type { Locale } from "../../../lib/site-config";
+import CTA from "../../../components/CTA.astro";
+
+export async function getStaticPaths() {
+  const allServices: CollectionEntry<"services">[] =
+    await getCollection("services");
+  return allServices.map((service) => ({
+    params: { locale: service.data.locale, slug: service.data.slug },
+    props: { service, locale: service.data.locale },
+  }));
+}
+
+const { service, locale } = Astro.props as {
+  service: CollectionEntry<"services">;
+  locale: Locale;
+};
+const { Content, headings } = await render(service);
+---
+
+<ServiceLayout service={service} locale={locale} headings={headings}>
+  <Content />
+</ServiceLayout>
+
+<CTA
+  title={locale === "id"
+    ? "Tertarik dengan layanan ini?"
+    : "Interested in this service?"}
+  content={locale === "id"
+    ? "Hubungi kami untuk diskusi lebih lanjut."
+    : "Contact us for a detailed discussion."}
+  ctaText={locale === "id" ? "Hubungi Kami" : "Contact Us"}
+  ctaHref="/contact"
+  locale={locale}
+/>

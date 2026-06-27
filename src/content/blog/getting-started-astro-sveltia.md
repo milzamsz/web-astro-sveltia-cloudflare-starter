@@ -81,6 +81,6 @@ Draft posts are excluded from production builds. To preview:
 
 ## Going Further
 
-- Customize the [Tailwind CSS](https://tailwindcss.com) theme in `src/styles/globals.css`
+- Customize the [Tailwind CSS](https://tailwindcss.com) theme in `src/styles/global.css`
 - Add new sections to pages via the CMS
 - Set up analytics with GTM or Umami via the site settings

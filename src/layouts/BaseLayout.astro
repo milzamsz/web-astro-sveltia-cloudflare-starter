@@ -1,31 +1,50 @@
 ---
-import Header from "../components/Header.astro";
-import Footer from "../components/Footer.astro";
+import Header from "../components/layout/Header.astro";
+import Footer from "../components/layout/Footer.astro";
+import SearchModal from "../components/layout/SearchModal.astro";
+import SEO from "../components/seo/SEO.astro";
+import Analytics from "../components/layout/Analytics.astro";
 import { SITE_CONFIG, type Locale } from "../lib/site-config";
-import { canonicalUrl, hreflangLinks, jsonLdWebSite, ogMeta } from "../lib/seo";
-import "../styles/globals.css";
+import { t } from "../i18n/ui";
+import "../styles/global.css";
 
 export interface Props {
   title: string;
   description?: string;
   locale?: Locale;
   path?: string;
+  ogImage?: string;
+  showHeader?: boolean;
+  showFooter?: boolean;
+  showThemeToggle?: boolean;
 }
 
 // For i18n routing, prefer path from Astro.currentRoute
-const { currentLocale, ...restProps } = Astro.props as Props & { currentLocale?: Locale };
+const { currentLocale, ...restProps } = Astro.props as Props & {
+  currentLocale?: Locale;
+};
 
 const {
   title,
   description = SITE_CONFIG.description,
   locale = currentLocale || SITE_CONFIG.defaultLocale,
   path = "/",
+  ogImage,
+  showHeader = true,
+  showFooter = true,
+  showThemeToggle = false,
 } = restProps;
 
-const canonical = canonicalUrl(locale, path);
-const links = hreflangLinks(path);
-const jsonLd = jsonLdWebSite({ title, description, locale, path });
-const og = ogMeta({ title, description, locale, path });
+function defaultOgImage(routePath: string) {
+  if (routePath === "/") return `/og/home/${locale}`;
+  if (routePath === "/blog") return `/og/blog-list/${locale}`;
+  if (routePath.startsWith("/blog/"))
+    return `/og/blog/${locale}/${routePath.replace(/^\/blog\//, "")}`;
+  if (routePath === "/services") return `/og/services-list/${locale}`;
+  if (routePath.startsWith("/services/"))
+    return `/og/service/${locale}/${routePath.replace(/^\/services\//, "")}`;
+  return `/og/page/${locale}${routePath}`;
+}
 ---
 
 <!doctype html>
@@ -35,43 +54,70 @@ const og = ogMeta({ title, description, locale, path });
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
-    <title>{title}</title>
-    <meta name="description" content={description} />
-
-    <!-- Canonical -->
-    <link rel="canonical" href={canonical} />
-
-    <!-- Hreflang -->
-    {links.map((link) => (
-      <link rel={link.rel} href={link.href} hreflang={link.hreflang} />
-    ))}
-
-    <!-- Open Graph / Twitter -->
-    {Object.entries(og).map(([property, content]) => (
-      <meta property={property} content={content} />
-    ))}
-
-    <!-- JSON-LD -->
-    <script type="application/ld+json set:html">
-      {JSON.stringify(jsonLd)}
+    <!-- Dark mode bootstrap (prevents FOUC) -->
+    <script is:inline>
+      function applyTheme() {
+        try {
+          const stored = localStorage.getItem("theme");
+          if (stored === "dark") {
+            document.documentElement.classList.add("dark");
+            return;
+          }
+          if (
+            !stored &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches
+          ) {
+            document.documentElement.classList.add("dark");
+          }
+        } catch (e) {
+          console.warn("dark mode:", e);
+        }
+      }
+      applyTheme();
     </script>
+
+    {
+      Astro.slots.has("seo") ? (
+        <slot name="seo" />
+      ) : (
+        <SEO
+          title={title}
+          description={description}
+          locale={locale}
+          path={path}
+          ogImage={ogImage ?? defaultOgImage(path)}
+        />
+      )
+    }
 
     <!-- Security headers stub — enforced at edge / server level -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
 
     <slot name="head" />
   </head>
-  <body>
+  <body class="flex min-h-screen flex-col">
     <a href="#main-content" class="skip-link">
-      {locale === "id" ? "Langsung ke konten" : "Skip to content"}
+      {t(locale, "aria.skipToContent")}
     </a>
 
-    <Header currentLocale={locale} currentPath={path} />
+    {
+      showHeader && (
+        <Header
+          currentLocale={locale}
+          currentPath={path}
+          showThemeToggle={showThemeToggle}
+        />
+      )
+    }
 
-    <main id="main-content">
+    <SearchModal locale={locale} />
+
+    <main id="main-content" class="flex-1">
       <slot />
     </main>
 
-    <Footer currentLocale={locale} />
+    {Astro.slots.has("analytics") ? <slot name="analytics" /> : <Analytics />}
+
+    {showFooter && <Footer currentLocale={locale} />}
   </body>
 </html>

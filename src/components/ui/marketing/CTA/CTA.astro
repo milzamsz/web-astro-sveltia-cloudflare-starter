@@ -1,0 +1,111 @@
+---
+import Button from "../../form/Button/Button.astro";
+import Section from "../../layout/Section/Section.astro";
+
+export interface Props {
+  title: string;
+  content?: string;
+  primaryText?: string;
+  primaryHref?: string;
+  secondaryText?: string;
+  secondaryHref?: string;
+  centered?: boolean;
+}
+
+const {
+  title,
+  content,
+  primaryText,
+  primaryHref,
+  secondaryText,
+  secondaryHref,
+  centered = true,
+} = Astro.props as Props;
+---
+
+<Section spacing="xl" class="ui-cta">
+  <div class:list={["ui-cta__inner", centered && "ui-cta__inner--centered"]}>
+    <h2>{title}</h2>
+    {content && <p>{content}</p>}
+    <div class="ui-cta__actions">
+      {
+        primaryText && primaryHref && (
+          <Button href={primaryHref} variant="primary">
+            {primaryText}
+          </Button>
+        )
+      }
+      {
+        secondaryText && secondaryHref && (
+          <Button href={secondaryHref} variant="secondary">
+            {secondaryText}
+          </Button>
+        )
+      }
+    </div>
+  </div>
+</Section>
+
+<style>
+  .ui-cta {
+    container-type: inline-block;
+  }
+
+  .ui-cta__inner {
+    border-radius: var(--radius-2xl);
+    padding: clamp(2rem, 5vw, 3.5rem);
+    background: linear-gradient(
+      135deg,
+      var(--surface-invert),
+      color-mix(in srgb, var(--surface-invert) 82%, var(--muted-foreground))
+    );
+    border: 1px solid var(--surface-invert-border);
+    box-shadow: var(--shadow-lg);
+    color: var(--surface-invert-foreground);
+  }
+
+  .ui-cta__inner--centered {
+    text-align: center;
+  }
+
+  .ui-cta__inner h2 {
+    margin: 0;
+    color: var(--surface-invert-foreground);
+    font-size: clamp(1.6rem, 3vw, 2.25rem);
+    letter-spacing: -0.01em;
+  }
+
+  .ui-cta__inner p {
+    margin: 0.85rem 0 0;
+    max-width: 44rem;
+    color: color-mix(in srgb, var(--surface-invert-foreground) 88%, transparent);
+    line-height: 1.65;
+  }
+
+  .ui-cta__inner--centered p {
+    margin-inline: auto;
+  }
+
+  .ui-cta__actions {
+    display: flex;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+    margin-top: var(--space-lg);
+    justify-content: center;
+  }
+
+  .ui-cta__inner:not(.ui-cta__inner--centered) .ui-cta__actions {
+    justify-content: flex-start;
+  }
+
+  /* Invert buttons against the gradient surface for clear contrast. */
+  .ui-cta__actions :global(a) {
+    background: var(--surface-invert-foreground);
+    color: var(--surface-invert);
+    border-color: transparent;
+  }
+
+  .ui-cta__actions :global(a:hover) {
+    opacity: 0.9;
+  }
+</style>

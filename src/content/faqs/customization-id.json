@@ -1,0 +1,7 @@
+{
+  "question": "Bagaimana cara menyesuaikan tema situs?",
+  "answer": "Situs ini menggunakan palet biru yang didefinisikan di `src/styles/tokens/colors.css`. Anda dapat mengubah variabel CSS di sana untuk mode terang dan gelap. Blok `@theme` Tailwind di `global.css` memetakan token ini ke kelas utilitas.",
+  "category": "customization",
+  "order": 1,
+  "locale": "id"
+}

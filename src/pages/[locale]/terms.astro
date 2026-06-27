@@ -1,9 +1,6 @@
 ---
 export function getStaticPaths() {
-  return [
-    { params: { locale: "id" } },
-    { params: { locale: "en" } },
-  ];
+  return [{ params: { locale: "id" } }, { params: { locale: "en" } }];
 }
 
 import BaseLayout from "../../layouts/BaseLayout.astro";

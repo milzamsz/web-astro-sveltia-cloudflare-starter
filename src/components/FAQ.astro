@@ -1,4 +1,6 @@
 ---
+import JsonLd from "./seo/JsonLd.astro";
+
 export interface FAQItem {
   question: string;
   answer: string;
@@ -10,36 +12,71 @@ export interface Props {
 }
 
 const { title, items } = Astro.props;
+const schema = items.length
+  ? {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: items.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.answer,
+        },
+      })),
+    }
+  : null;
 ---
 
 <section class="faq container">
   {title && <h2 class="faq__title">{title}</h2>}
   <div class="faq__list">
-    {items.map((item, index) => (
-      <details class="faq__item" name="faq">
-        <summary class="faq__question">
-          <span>{item.question}</span>
-          <svg class="faq__chevron" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-            <path d="M7 7L10 10L13 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </summary>
-        <p class="faq__answer">{item.answer}</p>
-      </details>
-    ))}
+    {
+      items.map((item) => (
+        <details class="faq__item" name="faq">
+          <summary class="faq__question">
+            <span>{item.question}</span>
+            <svg
+              class="faq__chevron"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M7 7L10 10L13 7"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </summary>
+          <p class="faq__answer">{item.answer}</p>
+        </details>
+      ))
+    }
   </div>
 </section>
 
+{schema && <JsonLd schema={schema} />}
+
 <script>
   // Allow only one open item at a time (accordion behavior)
-  document.querySelectorAll<HTMLDetailsElement>(".faq__item").forEach((item) => {
-    item.addEventListener("toggle", () => {
-      if (item.open) {
-        document.querySelectorAll<HTMLDetailsElement>(".faq__item[open]").forEach((other) => {
-          if (other !== item) other.open = false;
-        });
-      }
+  document
+    .querySelectorAll<HTMLDetailsElement>(".faq__item")
+    .forEach((item) => {
+      item.addEventListener("toggle", () => {
+        if (item.open) {
+          document
+            .querySelectorAll<HTMLDetailsElement>(".faq__item[open]")
+            .forEach((other) => {
+              if (other !== item) other.open = false;
+            });
+        }
+      });
     });
-  });
 </script>
 
 <style>
@@ -48,7 +85,7 @@ const { title, items } = Astro.props;
   }
 
   .faq__title {
-    font-size: 1.75rem;
+    font-size: clamp(1.5rem, 3vw, 2rem);
     font-weight: 700;
     text-align: center;
     margin: 0 0 var(--space-xl);
@@ -81,6 +118,12 @@ const { title, items } = Astro.props;
 
   .faq__question:hover {
     color: var(--color-brand-primary);
+  }
+
+  .faq__question:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
   }
 
   .faq__chevron {

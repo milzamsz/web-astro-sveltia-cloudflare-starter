@@ -24,7 +24,15 @@ export interface Props {
   aspectRatio?: string;
 }
 
-const { preset, src, alt, loading = "lazy", class: className, baseUrl, aspectRatio } = Astro.props;
+const {
+  preset,
+  src,
+  alt,
+  loading = "lazy",
+  class: className,
+  baseUrl,
+  aspectRatio,
+} = Astro.props;
 
 // Fail closed: unknown preset → rendering error in dev, skip in production
 const imgUrl = presetUrl(preset, src, baseUrl);
@@ -37,7 +45,9 @@ if (!imgUrl) {
 
 const imgWidth = presetDef?.width ? `${presetDef.width}` : undefined;
 const imgHeight = presetDef?.height ? `${presetDef.height}` : undefined;
-const aspect = aspectRatio || (imgWidth && imgHeight ? `${imgWidth}/${imgHeight}` : undefined);
+const aspect =
+  aspectRatio ||
+  (imgWidth && imgHeight ? `${imgWidth}/${imgHeight}` : undefined);
 ---
 
 {
@@ -54,7 +64,7 @@ const aspect = aspectRatio || (imgWidth && imgHeight ? `${imgWidth}/${imgHeight}
       decoding="async"
     />
   ) : (
-    <!-- Img preset "{preset}" is not defined — rendering fallback -->
+    // Img preset "{preset}" is not defined — rendering fallback
     <img
       src={src}
       alt={alt}

@@ -4,6 +4,9 @@
 interface Window {
   dataLayer?: Record<string, unknown>[];
   umami?: {
-    track: (event: string, data?: Record<string, string | number | boolean>) => void;
+    track: (
+      event: string,
+      data?: Record<string, string | number | boolean>,
+    ) => void;
   };
 }

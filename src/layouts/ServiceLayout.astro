@@ -1,0 +1,190 @@
+---
+import { type CollectionEntry } from "astro:content";
+import BaseLayout from "./BaseLayout.astro";
+import SEO from "../components/seo/SEO.astro";
+import { type Locale } from "../lib/site-config";
+import { canonicalUrl, jsonLdService } from "../lib/seo";
+import { siteConfig } from "../config/site.config";
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+export interface Props {
+  service: CollectionEntry<"services">;
+  locale: Locale;
+  headings?: Heading[];
+}
+
+const { service, locale, headings = [] } = Astro.props as Props;
+const showToc =
+  siteConfig.articleFeatures.toc.enabled &&
+  siteConfig.articleFeatures.toc.layout !== "none" &&
+  headings.filter((heading: Heading) => heading.depth >= 2).length >=
+    siteConfig.articleFeatures.toc.minHeadings;
+const serviceJsonLd = jsonLdService({
+  name: service.data.title,
+  description: service.data.description,
+  locale,
+  url: canonicalUrl(locale, `/services/${service.data.slug}`),
+});
+---
+
+<BaseLayout
+  title={service.data.title}
+  description={service.data.description}
+  locale={locale}
+  path={`/services/${service.data.slug}`}
+  showThemeToggle={true}
+>
+  <SEO
+    slot="seo"
+    title={service.data.title}
+    description={service.data.description}
+    locale={locale}
+    path={`/services/${service.data.slug}`}
+    ogImage={`/og/service/${locale}/${service.data.slug}`}
+    jsonLd={serviceJsonLd}
+  />
+
+  <article class="service-layout container py-12">
+    <header class="service-layout__hero">
+      <p class="service-layout__eyebrow">
+        {locale === "id" ? "Layanan" : "Service"}
+      </p>
+      <h1>{service.data.title}</h1>
+      <p class="service-layout__description">{service.data.description}</p>
+      {
+        service.data.priceRange && (
+          <span class="service-layout__price">{service.data.priceRange}</span>
+        )
+      }
+    </header>
+
+    {
+      service.data.features.length > 0 && (
+        <section
+          class="service-layout__features"
+          aria-labelledby="service-features-title"
+        >
+          <h2 id="service-features-title">
+            {locale === "id" ? "Fitur" : "Features"}
+          </h2>
+          <ul>
+            {service.data.features.map((feature: string) => (
+              <li>{feature}</li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    {
+      showToc && (
+        <nav class="service-layout__toc" aria-label="Table of contents">
+          <p>{locale === "id" ? "Daftar isi" : "Table of contents"}</p>
+          <ul>
+            {headings
+              .filter(
+                (heading: Heading) =>
+                  heading.depth >= 2 &&
+                  heading.depth <= siteConfig.articleFeatures.toc.maxDepth,
+              )
+              .map((heading: Heading) => (
+                <li>
+                  <a href={`#${heading.slug}`}>{heading.text}</a>
+                </li>
+              ))}
+          </ul>
+        </nav>
+      )
+    }
+
+    <div
+      class="service-layout__content prose prose-gray dark:prose-invert max-w-none"
+    >
+      <slot />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .service-layout__hero {
+    display: grid;
+    gap: var(--space-md);
+    max-width: 48rem;
+    margin-bottom: var(--space-2xl);
+  }
+
+  .service-layout__eyebrow {
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.75rem;
+    color: var(--color-brand-primary);
+    font-weight: 700;
+  }
+
+  .service-layout__hero h1 {
+    margin: 0;
+    font-size: clamp(2.25rem, 4vw, 3.5rem);
+    line-height: 1.1;
+  }
+
+  .service-layout__description {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: 1.125rem;
+    line-height: 1.7;
+  }
+
+  .service-layout__price {
+    display: inline-flex;
+    width: fit-content;
+    border-radius: 9999px;
+    background: var(--color-bg-tertiary);
+    padding: 0.375rem 0.75rem;
+    font-weight: 700;
+  }
+
+  .service-layout__features {
+    margin-bottom: var(--space-xl);
+  }
+
+  .service-layout__features ul,
+  .service-layout__toc ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .service-layout__features li,
+  .service-layout__toc li {
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: var(--color-bg-secondary);
+  }
+
+  .service-layout__toc {
+    margin-bottom: var(--space-xl);
+  }
+
+  .service-layout__toc p {
+    margin: 0 0 var(--space-sm);
+    font-weight: 700;
+  }
+
+  .service-layout__toc a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .service-layout__toc a:hover {
+    color: var(--color-brand-primary);
+  }
+</style>

@@ -1,0 +1,21 @@
+---
+export function getStaticPaths() {
+  return [{ params: { locale: "id" } }, { params: { locale: "en" } }];
+}
+
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PagesOverview from "../../components/showcase/PagesOverview.astro";
+
+const locale = (Astro.currentLocale || "en") as "id" | "en";
+---
+
+<BaseLayout
+  title="Pages"
+  description="Overview of every page, available in both locales."
+  locale={locale}
+  path={"/pages"}
+>
+  <div class="container">
+    <PagesOverview locale={locale} />
+  </div>
+</BaseLayout>

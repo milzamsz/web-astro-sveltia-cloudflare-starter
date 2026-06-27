@@ -1,0 +1,104 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { Card } from "../ui/index";
+import { resolveRoute } from "../../i18n/routes";
+import { type Locale } from "../../lib/site-config";
+import { t } from "../../i18n/ui";
+import TagList from "./TagList.astro";
+import BlogImageSVG from "./BlogImageSVG.astro";
+
+export interface Props {
+  post: CollectionEntry<"blog">;
+  variant?: "grid" | "list";
+  locale?: Locale;
+}
+
+const {
+  post,
+  variant = "grid",
+  locale = post.data.locale,
+} = Astro.props as Props;
+const publishDate = new Date(post.data.publishDate);
+const readingTime = Math.max(
+  1,
+  Math.ceil((post.body ?? "").trim().split(/\s+/).filter(Boolean).length / 200),
+);
+const excerpt =
+  post.data.description.length > 150
+    ? `${post.data.description.slice(0, 147)}...`
+    : post.data.description;
+const href = resolveRoute(locale, `/blog/${post.id}`);
+---
+
+<Card hover={true} class={`blog-card blog-card--${variant}`}>
+  <div slot="header" class="blog-card__media">
+    <BlogImageSVG slug={post.data.svgSlug ?? post.id} title={post.data.title} />
+  </div>
+  <div class="blog-card__body">
+    <p class="blog-card__meta">
+      <time datetime={publishDate.toISOString()}>
+        {
+          publishDate.toLocaleDateString(locale === "id" ? "id-ID" : "en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })
+        }
+      </time>
+      <span
+        >{
+          t(locale, "blog.minutesRead").replace("{n}", String(readingTime))
+        }</span
+      >
+    </p>
+    <h3 class="blog-card__title"><a href={href}>{post.data.title}</a></h3>
+    <p class="blog-card__excerpt">{excerpt}</p>
+    <TagList tags={post.data.tags ?? []} locale={locale} />
+  </div>
+</Card>
+
+<style>
+  .blog-card {
+    height: 100%;
+  }
+
+  .blog-card__media :global(svg) {
+    border-bottom: 1px solid var(--color-border);
+    border-top-left-radius: 0.9rem;
+    border-top-right-radius: 0.9rem;
+  }
+
+  .blog-card__body {
+    display: grid;
+    gap: var(--space-sm);
+  }
+
+  .blog-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: 0.8125rem;
+  }
+
+  .blog-card__title {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+
+  .blog-card__title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .blog-card__title a:hover {
+    color: var(--color-brand-primary);
+  }
+
+  .blog-card__excerpt {
+    margin: 0;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+  }
+</style>
