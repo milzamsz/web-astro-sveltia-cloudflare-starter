@@ -15,10 +15,21 @@
 # - frame-ancestors 'none': prevent clickjacking
 
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' cdn.jsdelivr.net challenges.cloudflare.com umami.example.com www.googletagmanager.com; style-src 'self' 'unsafe-inline' cdn.jsdelivr.net; frame-src 'self' challenges.cloudflare.com www.openstreetmap.org; connect-src 'self' api.resend.com api.github.com challenges.cloudflare.com www.google-analytics.com; img-src 'self' data: https:; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' cdn.jsdelivr.net challenges.cloudflare.com umami.example.com www.googletagmanager.com; style-src 'self' 'unsafe-inline' cdn.jsdelivr.net fonts.googleapis.com; frame-src 'self' challenges.cloudflare.com www.openstreetmap.org; connect-src 'self' api.resend.com api.github.com challenges.cloudflare.com www.google-analytics.com; img-src 'self' data: https:; font-src 'self' data: fonts.gstatic.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   Cross-Origin-Opener-Policy: same-origin
   Cross-Origin-Resource-Policy: same-origin
+
+# Sveltia CMS needs a looser policy than the public site: it loads its UI bundle
+# from jsDelivr, Material Symbols icons + fonts from Google Fonts, talks to the
+# GitHub API, pulls media from *.githubusercontent.com / R2, and (optionally)
+# uses Google translate APIs. This more specific rule overrides the /* CSP for
+# /admin only. COOP is relaxed so the OAuth popup fallback can postMessage.
+/admin/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' cdn.jsdelivr.net fonts.googleapis.com; font-src 'self' data: fonts.gstatic.com cdn.jsdelivr.net; img-src 'self' data: https:; connect-src 'self' api.github.com *.githubusercontent.com *.r2.cloudflarestorage.com cdn.jsdelivr.net fonts.googleapis.com fonts.gstatic.com translation.googleapis.com generativelanguage.googleapis.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Cross-Origin-Opener-Policy: unsafe-none
