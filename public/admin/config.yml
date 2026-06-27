@@ -39,8 +39,13 @@ backend:
 media_libraries:
   cloudflare_r2:
     bucket: astro-sveltia-media
-    account_id: REPLACE_WITH_CLOUDFLARE_ACCOUNT_ID
-    access_key_id: REPLACE_WITH_R2_ACCESS_KEY_ID
+    account_id: 654e14e01fc4ff64f866b87ba50f8818
+    access_key_id: 2c8a1d6e0b5e8ba30faf6c73d9b8018d
+    # TODO: still required. The value above (…r2.cloudflarestorage.com) is the S3
+    # endpoint and CANNOT be used here — it always needs auth, so previews fail.
+    # Enable a PUBLIC URL: R2 → astro-sveltia-media → Settings → "Public
+    # Development URL" → copy the https://pub-XXXX.r2.dev value here, OR attach a
+    # custom domain (https://assets.example.com) and use that.
     public_url: https://REPLACE_WITH_PUBLIC_BUCKET_URL.r2.dev
     prefix: uploads/
 
