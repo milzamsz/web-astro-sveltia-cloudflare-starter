@@ -1,64 +1,88 @@
 ﻿/**
- * GitHub OAuth initiation for Sveltia CMS — self-hosted on Cloudflare Pages.
+ * GET /auth?provider=github — session-gated token handshake for Sveltia CMS.
  *
- * GET /auth?provider=github&scope=repo,user
- *   -> sets a short-lived CSRF state cookie and redirects to GitHub.
+ * This is the FALLBACK path for the email/password-only login model. The primary
+ * path pre-seeds Sveltia's session in /admin/index.html via /api/cms/token, so
+ * editors normally never reach this endpoint. If they do (e.g. they click
+ * "Sign In with GitHub" because the pre-seed failed), we do NOT redirect to
+ * GitHub. Instead, if the editor has a valid Better Auth session, we complete
+ * Sveltia's `postMessage` handshake with the server-held GitHub token — so no
+ * GitHub screen ever appears. No session → redirect the popup to /login.
  *
- * The callback (GET /auth/callback) is handled by ./callback.ts, which performs
- * the token exchange and the Sveltia/Decap `postMessage` handshake.
- *
- * Required environment variables (Cloudflare Pages → Settings → Variables):
- *   - GITHUB_CLIENT_ID     (public)
- *   - GITHUB_CLIENT_SECRET (secret, used in callback.ts)
- *
- * The GitHub OAuth App's "Authorization callback URL" must be:
- *   https://web-astro-sveltia-cloudflare-starter.pages.dev/auth/callback
+ * Required environment variable:
+ *   - GITHUB_CMS_TOKEN — fine-grained PAT (content repo, Contents: read/write)
  */
 
-interface Env {
-  GITHUB_CLIENT_ID: string;
-  GITHUB_CLIENT_SECRET: string;
+import { getEditorSession } from "../_shared/session";
+
+const PROVIDER = "github";
+
+export interface Env {
+  DB: D1Database;
+  GITHUB_CMS_TOKEN?: string;
 }
 
-const CALLBACK_URL =
-  "https://web-astro-sveltia-cloudflare-starter.pages.dev/auth/callback";
+function renderHandshake(
+  status: "success" | "error",
+  payload: Record<string, unknown>,
+): Response {
+  const message = `authorization:${PROVIDER}:${status}:${JSON.stringify(payload)}`;
+  const serialized = JSON.stringify(message);
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+  <head><meta charset="utf-8" /><title>Authenticating…</title></head>
+  <body>
+    <p>Completing sign-in, you may close this window…</p>
+    <script>
+      (function () {
+        var message = ${serialized};
+        function receive(event) {
+          if (event.data !== "authorizing:${PROVIDER}") return;
+          window.removeEventListener("message", receive, false);
+          if (window.opener) window.opener.postMessage(message, event.origin);
+        }
+        window.addEventListener("message", receive, false);
+        if (window.opener) window.opener.postMessage("authorizing:${PROVIDER}", "*");
+      })();
+    </script>
+  </body>
+</html>`;
+
+  return new Response(html, {
+    status: 200,
+    headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" },
+  });
+}
 
 export async function onRequest(context: {
   request: Request;
   env: Env;
 }): Promise<Response> {
   const { request, env } = context;
-  const url = new URL(request.url);
 
   if (request.method !== "GET") {
     return new Response("Method Not Allowed", { status: 405 });
   }
 
-  const provider = url.searchParams.get("provider") ?? "github";
-  const scope = url.searchParams.get("scope") || "repo,user";
-
-  if (provider !== "github") {
-    return new Response("Unsupported provider", { status: 400 });
+  const session = await getEditorSession(request, env);
+  if (!session) {
+    // Not logged in → send them to the email/password login first.
+    return new Response(null, {
+      status: 302,
+      headers: { Location: "/login?return_to=/admin/" },
+    });
   }
 
-  if (!env.GITHUB_CLIENT_ID) {
-    return new Response("GITHUB_CLIENT_ID is not configured", { status: 500 });
+  if (!env.GITHUB_CMS_TOKEN) {
+    return renderHandshake("error", {
+      error: "server_misconfigured",
+      error_description: "GITHUB_CMS_TOKEN is not set on the server.",
+    });
   }
 
-  const state = crypto.randomUUID();
-
-  const githubAuthUrl = new URL("https://github.com/login/oauth/authorize");
-  githubAuthUrl.searchParams.set("client_id", env.GITHUB_CLIENT_ID);
-  githubAuthUrl.searchParams.set("redirect_uri", CALLBACK_URL);
-  githubAuthUrl.searchParams.set("scope", scope);
-  githubAuthUrl.searchParams.set("state", state);
-
-  return new Response(null, {
-    status: 302,
-    headers: {
-      Location: githubAuthUrl.toString(),
-      // Short-lived, HttpOnly CSRF cookie validated in callback.ts.
-      "Set-Cookie": `csrf_state=${state}; Path=/auth; HttpOnly; Secure; SameSite=Lax; Max-Age=600`,
-    },
+  return renderHandshake("success", {
+    token: env.GITHUB_CMS_TOKEN,
+    provider: PROVIDER,
   });
 }

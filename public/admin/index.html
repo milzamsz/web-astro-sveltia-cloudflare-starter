@@ -19,10 +19,46 @@
     // Sveltia CMS — pinned for reproducible, supply-chain-safe loads.
     // Bump this single version constant to upgrade. Latest: https://github.com/sveltia/sveltia-cms/releases
     const SVELTIA_CMS_VERSION = '0.168.0';
+
+    // ── Email/password-only SSO bridge ─────────────────────────────────────
+    // Editors authenticate with email/password (+2FA) via Better Auth; reaching
+    // this page already requires a valid session (admin middleware). We then
+    // fetch the server-held GitHub token and pre-seed Sveltia's session so the
+    // GitHub sign-in screen never appears. Sveltia restores the session on init
+    // by reading `sveltia-cms.user` and validating the token via the GitHub API.
+    // If anything here fails, we fall back to Sveltia's normal login screen
+    // (whose "Sign In with GitHub" also resolves to the token, never GitHub).
+    try {
+      const res = await fetch('/api/cms/token', {
+        credentials: 'include',
+        headers: { Accept: 'application/json' },
+      });
+      if (res.status === 401) {
+        location.href = '/login?return_to=' + encodeURIComponent('/admin/');
+        throw new Error('redirecting-to-login');
+      }
+      if (res.ok) {
+        const { token } = await res.json();
+        if (token) {
+          localStorage.setItem(
+            'sveltia-cms.user',
+            JSON.stringify({ backendName: 'github', token }),
+          );
+        }
+      }
+    } catch (e) {
+      if (e && e.message === 'redirecting-to-login') {
+        // Stop initializing the CMS while the browser navigates to /login.
+        throw e;
+      }
+      console.warn('CMS SSO pre-seed failed; falling back to sign-in screen.', e);
+    }
+
     try {
       const CMS = await import(`https://cdn.jsdelivr.net/npm/@sveltia/cms@${SVELTIA_CMS_VERSION}/dist/sveltia-cms.mjs`);
       CMS.init({ config: { load_config: true } });
     } catch (e) {
+      if (e && e.message === 'redirecting-to-login') throw e;
       document.getElementById('nc-root').innerHTML = 
         '<div style="padding:2rem;font-family:system-ui,sans-serif;max-width:600px;margin:2rem auto;text-align:center">' +
         '<h2>CMS Load Failed</h2>' +

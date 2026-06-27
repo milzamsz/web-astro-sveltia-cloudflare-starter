@@ -50,8 +50,11 @@ export async function onRequest(context: {
     '/api/auth/email-otp',
     '/api/auth/backup-codes',
     '/api/auth/backup-codes/verify',
+    // config.yml is fetched by the already-authenticated admin page; it only
+    // exposes the (public) repo name, no secrets. Kept bypassed to avoid an
+    // init race. NOTE: /admin/index.html is intentionally NOT bypassed so the
+    // CMS shell requires a valid Better Auth session (email/password + 2FA).
     '/admin/config.yml',
-    '/admin/index.html',
   ];
 
   if (bypassPaths.some(p => url.pathname.startsWith(p))) {
