@@ -82,6 +82,9 @@ if (fs.existsSync(configPath)) {
     'blog-id', 'blog-en',
     'docs',
     'settings',
+    'authors',
+    'faqs-id', 'faqs-en',
+    'stack',
   ];
 
   expected.forEach(name => {
@@ -115,7 +118,7 @@ const contentConfigPath = path.join(ROOT, 'src/content.config.ts');
 if (fs.existsSync(contentConfigPath)) {
   const contentContent = fs.readFileSync(contentConfigPath, 'utf8');
   // Check for key schema fields referenced in CMS config
-  const hasLocale = contentContent.includes('locale: z.enum');
+  const hasLocale = contentContent.includes('locale: z.enum') || contentContent.includes('locale: localeSchema');
   const hasSlug = contentContent.includes('slug: z.string');
   const hasTranslationKey = contentContent.includes('translationKey: z.string');
   const hasDraft = contentContent.includes('draft: z.boolean');

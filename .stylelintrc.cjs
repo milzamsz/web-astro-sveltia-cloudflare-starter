@@ -20,5 +20,8 @@ module.exports = {
     'import-notation': null,
     'color-hex-length': 'short',
     'alpha-value-notation': 'percentage',
+    'scss/at-rule-no-unknown': [true, {
+      ignoreAtRules: ['theme', 'custom-variant', 'utility', 'import', 'tailwindcss'],
+    }],
   },
 }

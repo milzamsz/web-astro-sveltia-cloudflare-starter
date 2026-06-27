@@ -1,6 +1,8 @@
 /* eslint.config.mjs — Flat Config for ESLint v9+ */
 import js from "@eslint/js";
 import tseslint from "typescript-eslint";
+import eslintPluginAstro from "eslint-plugin-astro";
+import globals from "globals";
 import prettier from "eslint-config-prettier";
 
 export default [
@@ -8,31 +10,14 @@ export default [
 
   js.configs.recommended,
   ...tseslint.configs.recommended,
+  ...eslintPluginAstro.configs.recommended,
   prettier,
 
   {
     languageOptions: {
       globals: {
-        process: "readonly",
-        console: "readonly",
-        fetch: "readonly",
-        Response: "readonly",
-        Request: "readonly",
-        URL: "readonly",
-        URLSearchParams: "readonly",
-        Headers: "readonly",
-        crypto: "readonly",
-        TextEncoder: "readonly",
-        TextDecoder: "readonly",
-        setTimeout: "readonly",
-        clearTimeout: "readonly",
-        setInterval: "readonly",
-        clearInterval: "readonly",
-        module: "readonly",
-        __dirname: "readonly",
-        __filename: "readonly",
-        exports: "writable",
-        require: "readonly",
+        ...globals.browser,
+        ...globals.node,
       },
     },
     rules: {

@@ -5,7 +5,10 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "skipLibCheck": true
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
   },
   "include": ["src/**/*"]
 }

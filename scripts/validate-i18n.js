@@ -1,52 +1,49 @@
 #!/usr/bin/env node
 
-/**
- * Validates that all core routes have locale-prefixed counterparts
- * and checks translation key coverage.
- */
+import { readFileSync, existsSync } from "node:fs";
+import { join } from "node:path";
 
-import { readFileSync, readdirSync, existsSync } from "node:fs";
-import { join, basename, extname } from "node:path";
-import { pathToFileURL } from "node:url";
-
-const LOCALES = ["id", "en"];
 const SRC_DIR = join(process.cwd(), "src");
 const I18N_DIR = join(SRC_DIR, "i18n");
-const UI_FILE = join(I18N_DIR, "ui.ts");
+const EN_FILE = join(I18N_DIR, "en.json");
+const ID_FILE = join(I18N_DIR, "id.json");
 
 const errors = [];
 
-// 1. Check that src/i18n/ exists with required files
-if (!existsSync(UI_FILE)) {
-  errors.push("Missing src/i18n/ui.ts — UI translation dictionary not found");
+if (!existsSync(EN_FILE)) {
+  errors.push("Missing src/i18n/en.json — English translation file not found");
+}
+if (!existsSync(ID_FILE)) {
+  errors.push("Missing src/i18n/id.json — Indonesian translation file not found");
 }
 
-// 2. Check that translation keys are defined for all locales
+let en = {};
+let id = {};
 try {
-  // Use pathToFileURL for Windows compatibility
-  const uiUrl = pathToFileURL(UI_FILE);
-  const uiContent = await import(uiUrl);
-  for (const locale of LOCALES) {
-    if (!uiContent.translations[locale]) {
-      errors.push(`Missing translation dictionary for locale "${locale}" in ui.ts`);
-    } else {
-      const keys = Object.keys(uiContent.translations[locale]);
-      if (keys.length === 0) {
-        errors.push(`Empty translation dictionary for locale "${locale}" in ui.ts`);
-      }
-    }
+  en = JSON.parse(readFileSync(EN_FILE, "utf8"));
+  id = JSON.parse(readFileSync(ID_FILE, "utf8"));
+} catch (error) {
+  errors.push(`Failed to load translation JSON: ${error.message}`);
+}
+
+const enKeys = Object.keys(en);
+const idKeys = Object.keys(id);
+for (const key of enKeys) {
+  if (!(key in id)) {
+    errors.push(`Missing Indonesian translation key: ${key}`);
   }
-} catch (e) {
-  errors.push(`Failed to load translations: ${e.message}`);
+}
+for (const key of idKeys) {
+  if (!(key in en)) {
+    errors.push(`Extra Indonesian translation key missing from English source: ${key}`);
+  }
 }
 
-// 3. Check locale helpers exist
-const helpersExist = existsSync(join(I18N_DIR, "routes.ts")) && existsSync(join(I18N_DIR, "switcher.ts"));
+const helpersExist = existsSync(join(I18N_DIR, "routes.ts")) && existsSync(join(I18N_DIR, "switcher.ts")) && existsSync(join(I18N_DIR, "ui.ts"));
 if (!helpersExist) {
-  errors.push("Missing i18n helpers: src/i18n/routes.ts or src/i18n/switcher.ts not found");
+  errors.push("Missing i18n helpers: src/i18n/routes.ts, src/i18n/switcher.ts, or src/i18n/ui.ts not found");
 }
 
-// 4. Report
 if (errors.length > 0) {
   console.error("❌ I18n validation failed:");
   for (const err of errors) {
@@ -54,5 +51,5 @@ if (errors.length > 0) {
   }
   process.exit(1);
 } else {
-  console.log("✅ I18n validation passed — all required files and translations present");
+  console.log("✅ I18n validation passed — JSON translation files are in sync");
 }
