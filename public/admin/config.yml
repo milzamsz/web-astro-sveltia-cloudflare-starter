@@ -40,8 +40,7 @@ media_libraries:
   # Applies to every provider: sanitize uploaded filenames (lowercase, no
   # spaces/accents) so asset URLs never break, e.g. "GITHUB term.png" → "github-term.png".
   all:
-    config:
-      slugify_filename: true
+    slugify_filename: true
   cloudflare_r2:
     bucket: astro-sveltia-media
     account_id: 654e14e01fc4ff64f866b87ba50f8818
