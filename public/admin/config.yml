@@ -44,6 +44,7 @@ collections:
   # ─── Pages ───────────────────────────────────────────────
   # Indonesian pages: <slug>.md  (e.g. about.md)
   - name: pages-id
+    icon: description
     label: Pages (Indonesia)
     label_singular: Page
     description: Halaman publik dalam bahasa Indonesia
@@ -129,6 +130,7 @@ collections:
 
   # English pages: <slug>_en.md  (e.g. about_en.md)
   - name: pages-en
+    icon: description
     label: Pages (English)
     label_singular: Page
     description: Public pages in English
@@ -208,9 +210,12 @@ collections:
         widget: markdown
         required: false
 
+  - divider: true
+
   # ─── Services ────────────────────────────────────────────
   # Indonesian services: <slug>.md
   - name: services-id
+    icon: design_services
     label: Services (Indonesia)
     label_singular: Service
     description: Layanan dalam bahasa Indonesia
@@ -238,6 +243,7 @@ collections:
 
   # English services: <slug>_en.md
   - name: services-en
+    icon: design_services
     label: Services (English)
     label_singular: Service
     description: Services in English
@@ -263,10 +269,13 @@ collections:
       - { label: Publish State, name: publishState, widget: select, options: [draft, published, archived], default: published, required: false }
       - { label: Body, name: body, widget: markdown, required: false }
 
+  - divider: true
+
   # ─── Blog ────────────────────────────────────────────────
   # Blog posts use free-form filenames (not locale-suffixed).
   # Locale is selected from the frontmatter field.
   - name: blog-id
+    icon: article
     label: Blog (Indonesia)
     label_singular: Post
     description: Artikel blog dalam bahasa Indonesia
@@ -293,6 +302,7 @@ collections:
       - { label: Body, name: body, widget: markdown, required: false }
 
   - name: blog-en
+    icon: article
     label: Blog (English)
     label_singular: Post
     description: Blog posts in English
@@ -318,12 +328,112 @@ collections:
       - { label: Publish State, name: publishState, widget: select, options: [draft, published, archived], default: published, required: false }
       - { label: Body, name: body, widget: markdown, required: false }
 
+  - divider: true
+
+  # ─── Authors ─────────────────────────────────────────────
+  - name: authors
+    icon: group
+    label: Authors
+    label_singular: Author
+    description: Content author profiles
+    folder: src/content/authors
+    identifier_field: name
+    create: true
+    delete: true
+    extension: json
+    slug: "{{slug}}"
+    summary: "{{name}}"
+    fields:
+      - { label: Name, name: name, widget: string }
+      - { label: Bio, name: bio, widget: text }
+      - { label: Avatar URL, name: avatar, widget: string, required: false, hint: "Path to avatar image (e.g., /images/author.jpg)" }
+      - label: Social Links
+        name: social
+        widget: object
+        required: false
+        fields:
+          - { label: Twitter, name: twitter, widget: string, required: false, hint: "Twitter handle without @" }
+          - { label: GitHub, name: github, widget: string, required: false }
+          - { label: LinkedIn, name: linkedin, widget: string, required: false }
+          - { label: Email, name: email, widget: string, required: false }
+
+  # ─── FAQs ────────────────────────────────────────────────
+  - name: faqs-id
+    icon: quiz
+    label: FAQs (Indonesia)
+    label_singular: FAQ
+    description: Pertanyaan umum dalam bahasa Indonesia
+    folder: src/content/faqs
+    identifier_field: question
+    create: true
+    delete: true
+    extension: json
+    slug: "{{slug}}"
+    summary: "{{question|truncate(60)}}"
+    filter:
+      field: locale
+      value: id
+    fields:
+      - { label: Question, name: question, widget: string }
+      - { label: Answer, name: answer, widget: text }
+      - { label: Category, name: category, widget: string, required: false }
+      - { label: Order, name: order, widget: number, value_type: int, default: 0 }
+      - { label: Locale, name: locale, widget: hidden, default: id }
+
+  - name: faqs-en
+    icon: quiz
+    label: FAQs (English)
+    label_singular: FAQ
+    description: Frequently asked questions in English
+    folder: src/content/faqs
+    identifier_field: question
+    create: true
+    delete: true
+    extension: json
+    slug: "{{slug}}"
+    summary: "{{question|truncate(60)}}"
+    filter:
+      field: locale
+      value: en
+    fields:
+      - { label: Question, name: question, widget: string }
+      - { label: Answer, name: answer, widget: text }
+      - { label: Category, name: category, widget: string, required: false }
+      - { label: Order, name: order, widget: number, value_type: int, default: 0 }
+      - { label: Locale, name: locale, widget: hidden, default: en }
+
+  # ─── Stack ───────────────────────────────────────────────
+  - name: stack
+    icon: stacks
+    label: Tech Stack
+    label_singular: Technology
+    description: Technologies and tools used in the project
+    folder: src/content/stack
+    identifier_field: name
+    create: true
+    delete: true
+    extension: md
+    slug: "{{slug}}"
+    summary: "{{name}} {{version}}"
+    fields:
+      - { label: Name, name: name, widget: string }
+      - { label: Description, name: description, widget: text }
+      - { label: Version, name: version, widget: string, hint: "Semver or range (e.g. 7.0.x, 4.x, N/A)" }
+      - { label: URL, name: url, widget: string, hint: "Official website URL" }
+      - { label: Icon, name: icon, widget: string, hint: "astro-icon name (e.g. astro:astro, simple-icons:tailwindcss)" }
+      - { label: Color (OKLCH), name: colorOklch, widget: string, hint: "OKLCH color value for UI elements" }
+      - { label: Order, name: order, widget: number, value_type: int, default: 0 }
+      - { label: Body, name: body, widget: markdown, required: false }
+
   # ─── Documentation (Starlight) ────────────────────────────
   # Starlight docs have a separate schema and loader.
   # CMS exposes metadata fields only (title, description, sidebar).
   # Body content is managed by Starlight — editing body here may produce
   # frontmatter-only files that won't render as Starlight expects.
+  - divider: true
+
   - name: docs
+    icon: menu_book
     label: Documentation
     label_singular: Doc
     description: Dokumentasi teknis (metadata only — body managed by Starlight)
@@ -347,8 +457,11 @@ collections:
           - { label: Order, name: order, widget: number, value_type: int, required: false }
       - { label: Body, name: body, widget: markdown, required: false, hint: "Body content is managed by Starlight. Edits here may not render correctly if Starlight syntax is used." }
 
+  - divider: true
+
   # ─── Singleton Settings ───────────────────────────────────
   - name: settings
+    icon: settings
     label: Settings
     description: Global site configuration (analytics, map, organization)
     files:

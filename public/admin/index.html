@@ -16,8 +16,11 @@
 <body>
   <div id="nc-root"><div class="cms-loading">Loading Sveltia CMS...</div></div>
   <script type="module">
+    // Sveltia CMS — pinned for reproducible, supply-chain-safe loads.
+    // Bump this single version constant to upgrade. Latest: https://github.com/sveltia/sveltia-cms/releases
+    const SVELTIA_CMS_VERSION = '0.168.0';
     try {
-      const CMS = await import('https://cdn.jsdelivr.net/npm/@sveltia/cms@0.167.3/dist/sveltia-cms.mjs');
+      const CMS = await import(`https://cdn.jsdelivr.net/npm/@sveltia/cms@${SVELTIA_CMS_VERSION}/dist/sveltia-cms.mjs`);
       CMS.init({ config: { load_config: true } });
     } catch (e) {
       document.getElementById('nc-root').innerHTML = 
